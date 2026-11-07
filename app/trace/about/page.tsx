@@ -9,10 +9,45 @@ export const metadata: Metadata = {
   description: `${about.name}, ${about.role.toLowerCase()}: bio, CV and contact.`,
 }
 
-// Links still pointing at "#" are placeholders; list them without a dead link
+// Links still pointing at "#" are placeholders; leave them out until real
 const isReal = (href: string) => href !== "#" && href !== ""
 
 export default function AboutPage() {
+  const links = about.links.filter((l) => isReal(l.href))
+  const facts = [
+    { label: "School", value: about.school, wide: true },
+    ...(isReal(about.cv)
+      ? [
+          {
+            label: "CV",
+            value: (
+              <a href={about.cv} download className="underline">
+                Download (PDF)
+              </a>
+            ),
+          },
+        ]
+      : []),
+    ...(links.length
+      ? [
+          {
+            label: "Links",
+            value: (
+              <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                {links.map((l) => (
+                  <li key={l.label}>
+                    <a href={l.href} className="underline" rel="me noopener" target="_blank">
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ),
+          },
+        ]
+      : []),
+  ]
+
   return (
     <TraceShell
       header={<Masthead current="about" />}
@@ -24,7 +59,7 @@ export default function AboutPage() {
           </span>
         </LinkTab>
       }
-      footer={<TitleStamp cells={["Giannia — portfolio", "About", "Placeholder details"]} />}
+      footer={<TitleStamp cells={["Placeholder details"]} />}
     >
       <div className="grid gap-x-16 gap-y-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <section aria-labelledby="about-title">
@@ -49,40 +84,7 @@ export default function AboutPage() {
             {about.email}
           </a>
 
-          <TitleBlock
-            className="mt-8"
-            rows={[
-              { label: "School", value: about.school, wide: true },
-              {
-                label: "CV",
-                value: isReal(about.cv) ? (
-                  <a href={about.cv} download className="underline">
-                    Download (PDF)
-                  </a>
-                ) : (
-                  "To come"
-                ),
-              },
-              {
-                label: "Links",
-                value: (
-                  <ul className="flex flex-wrap gap-x-4 gap-y-1">
-                    {about.links.map((l) => (
-                      <li key={l.label}>
-                        {isReal(l.href) ? (
-                          <a href={l.href} className="underline" rel="me noopener" target="_blank">
-                            {l.label}
-                          </a>
-                        ) : (
-                          l.label
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                ),
-              },
-            ]}
-          />
+          <TitleBlock className="mt-8" rows={facts} />
         </section>
       </div>
     </TraceShell>

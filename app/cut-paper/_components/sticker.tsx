@@ -10,7 +10,6 @@ type Props = {
   dims: Dims
   /** responsive width hint for next/image */
   sizes: string
-  eager?: boolean
   /** set-aside stickers drop their label */
   bare?: boolean
 }
@@ -19,7 +18,7 @@ type Props = {
  * One die-cut sticker lying on the sheet, with its typeset label.
  * Hover / keyboard focus nudges it and draws the red crayon ring round it.
  */
-export function Sticker({ work, dims, sizes, eager, bare }: Props) {
+export function Sticker({ work, dims, sizes, bare }: Props) {
   const p = placement(work.slug)
   return (
     <Link
@@ -41,7 +40,6 @@ export function Sticker({ work, dims, sizes, eager, bare }: Props) {
           width={dims.w}
           height={dims.h}
           sizes={sizes}
-          loading={eager ? "eager" : "lazy"}
           draggable={false}
           className="cp-cutout"
         />

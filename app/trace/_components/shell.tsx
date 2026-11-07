@@ -1,6 +1,8 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 
+const LAYERS = [1, 2, 3]
+
 /** The light table and its stack of trace; every page is drawn on the top sheet. */
 export function TraceShell({
   header,
@@ -16,16 +18,19 @@ export function TraceShell({
   return (
     <div className="trace-desk">
       <div aria-hidden className="trace-stack">
-        <div className="trace-sheet" data-layer="1" />
-        <div className="trace-sheet" data-layer="2" />
-        <div className="trace-sheet" data-layer="3" />
+        {LAYERS.map((n) => (
+          <div key={`glow-${n}`} className="trace-glow" data-layer={n} />
+        ))}
+        {LAYERS.map((n) => (
+          <div key={`sheet-${n}`} className="trace-sheet" data-layer={n} />
+        ))}
       </div>
       <div className="trace-layout">
         <div className="trace-head">{header}</div>
         {aside ? <aside className="trace-aside">{aside}</aside> : null}
         <main className="trace-main">
           {children}
-          {footer ? <footer className="mt-16 flex justify-end lg:mt-20">{footer}</footer> : null}
+          {footer ? <footer className="trace-footer">{footer}</footer> : null}
         </main>
       </div>
     </div>
@@ -35,7 +40,7 @@ export function TraceShell({
 /** The drafted title block in the sheet's bottom-right corner. */
 export function TitleStamp({ cells }: { cells: string[] }) {
   return (
-    <p className="caps flex w-fit flex-wrap border-[1.5px] border-graphite text-[0.75rem] leading-none text-graphite">
+    <p className="trace-stamp caps flex w-fit flex-wrap border-[1.5px] border-graphite text-[0.75rem] leading-none text-graphite">
       {cells.map((c, i) => (
         <span key={c} className={`px-3 py-2 ${i > 0 ? "border-l border-graphite/60" : ""}`}>
           {c}

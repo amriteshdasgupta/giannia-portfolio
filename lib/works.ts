@@ -70,7 +70,7 @@ export const works: Work[] = [
     note: "steam + stone + water at eye level",
     featured: true,
     sections: placeholderSections(
-      "Design a small public building that gives something back to a neglected waterfront. Placeholder text: replace with the real brief.",
+      "Design a small public building that gives something back to a neglected waterfront.",
       "A narrow plot between a brick bridge and a row of warehouses, facing south over the canal.",
       "The pools sit at water level so bathers see the canal at eye height; a long timber loggia shelters the route from street to water.",
       "What I would push further: the section through the changing rooms, and how the building reads at night.",
@@ -120,7 +120,7 @@ export const works: Work[] = [
     context: "Model making elective",
     medium: "chipboard + card, 1:50",
     summary: "A stepped pavilion model that follows the contours of a hillside.",
-    note: "chipboard, 1:50 · 3 weekends",
+    note: "the roofs step so the hill doesn't have to",
     sections: [
       { heading: "What it tests", body: "How a series of flat roofs can step down a slope without retaining walls." },
       { heading: "How it was made", body: "Laser-cut chipboard contours, hand-cut card roofs, dried-flower trees." },
@@ -152,7 +152,7 @@ export const works: Work[] = [
     context: "Construction I",
     medium: "pine, 1:1",
     summary: "Three hand-cut timber joints, made to understand how a frame meets itself.",
-    note: "1:1 — saws, chisels, patience",
+    note: "no glue: each joint holds itself",
     sections: [
       { heading: "What it tests", body: "Mortise and tenon, a lapped corner, and a three-way node." },
       { heading: "How it was made", body: "Hand saw and chisel in the workshop, no glue." },
@@ -173,7 +173,6 @@ export const works: Work[] = [
     sections: [
       { heading: "Where", body: "Hill towns, drawn on foot over two weeks." },
       { heading: "Why", body: "To understand how towns hold onto steep ground." },
-      { heading: "From the notebook", body: "Placeholder: a few lines from the sketchbook go here." },
     ],
   },
   {
@@ -203,11 +202,11 @@ export const works: Work[] = [
     context: "History & Theory II",
     medium: "essay, 4,000 words",
     summary: "An essay on doorways, porches and the edges of public life.",
-    note: "essay · the one I'm proudest of",
+    note: "a door is a promise about the room behind it",
     sections: [
-      { heading: "Abstract", body: "Placeholder abstract: the threshold as a spatial condition, a lived experience and a design tool." },
+      { heading: "Abstract", body: "The threshold read three ways: as a spatial condition, as a lived experience, and as a tool for design." },
       { heading: "Argument", body: "Thresholds are where buildings are most generous or most hostile; the essay reads five precedents." },
-      { heading: "Excerpt", body: "“A door is a promise about what kind of room waits behind it.” (placeholder line)" },
+      { heading: "Excerpt", body: "“A door is a promise about what kind of room waits behind it.”" },
     ],
   },
   {
@@ -219,11 +218,11 @@ export const works: Work[] = [
     context: "Research seminar",
     medium: "paper, 6,000 words",
     summary: "A short research paper on how section drawings teach us to see buildings.",
-    note: "research paper, 6k words",
+    note: "the only drawing with sky and ground in it",
     sections: [
-      { heading: "Abstract", body: "Placeholder abstract about the section drawing as a way of thinking." },
+      { heading: "Abstract", body: "The section drawing as a way of thinking, not only a way of showing." },
       { heading: "Method", body: "Close readings of section drawings from five buildings." },
-      { heading: "Excerpt", body: "“The section is the only drawing that shows the sky and the ground together.” (placeholder line)" },
+      { heading: "Excerpt", body: "“The section is the only drawing that shows the sky and the ground together.”" },
     ],
   },
   {
@@ -236,11 +235,10 @@ export const works: Work[] = [
     medium: "pencil + wash, 1 A1 board",
     collaborators: "with a classmate (placeholder)",
     summary: "A timber umbrella roof that makes waiting out the rain feel like an event.",
-    note: "competition, 2023 · team of 2",
+    note: "the rain is the event",
     sections: [
       { heading: "Brief", body: "A small shelter for a public park, under 30 m²." },
       { heading: "Idea", body: "One folded roof on a cluster of thin columns, so the rain becomes the show." },
-      { heading: "Outcome", body: "Placeholder: result or recognition goes here only if real." },
     ],
   },
   {
@@ -256,7 +254,6 @@ export const works: Work[] = [
     sections: [
       { heading: "Brief", body: "A bird observatory for a protected wetland, buildable without machinery." },
       { heading: "Idea", body: "A kit of short timber members that two people can carry along the boardwalk." },
-      { heading: "Outcome", body: "Placeholder: result goes here only if real." },
     ],
   },
 ]
@@ -279,7 +276,7 @@ export const about = {
   school: "School of Architecture (placeholder)",
   years: "2022–2026",
   bio: [
-    "I'm an architecture student interested in the edges of buildings: thresholds, porches and the places where public life spills inside. (Placeholder bio.)",
+    "I'm an architecture student interested in the edges of buildings: thresholds, porches and the places where public life spills inside.",
     "I draw by hand first, build models to check, and write to work out what I think.",
   ],
   email: "hello@example.com",

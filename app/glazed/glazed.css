@@ -11,7 +11,6 @@
   --color-bar: #151515;
   --color-cobalt: #1d45b0;
   --color-amber: #d49a1e;
-  --color-oxblood: #7a1f24;
 }
 
 :root {
@@ -75,10 +74,12 @@ body {
 .glass {
   position: relative;
   isolation: isolate;
+  /* A daylight wash over the cast texture, seeded per pane (--lum): each sheet catches a
+     slightly different amount of light from behind, and text always sits on a calm field. */
+  --veil: rgb(245 247 249 / var(--lum, 0.56));
   background-color: var(--tint, var(--glass-clear));
-  /* A daylight wash over the cast texture: the seeds and ripples still read, but text sits on a calm field. */
   background-image:
-    linear-gradient(var(--veil, rgb(245 247 249 / 0.56)), var(--veil, rgb(245 247 249 / 0.56))),
+    linear-gradient(var(--veil), var(--veil)),
     url(/textures/seeded-glass.jpg);
   background-size: auto, var(--grain, 860px);
   background-position: 0 0, var(--gx, 0px) var(--gy, 0px);
@@ -86,11 +87,11 @@ body {
   color: var(--ink);
 }
 
-/* Colour glass: the same seeded sheet cast in colour, with almost no wash so it stays rich. */
-.glass--cobalt,
-.glass--amber,
-.glass--oxblood,
-.toggle[aria-pressed="true"] {
+/* Colour glass is reserved for state and the contact route: the active filter and view,
+   Email and CV. The same seeded sheet cast in colour, with almost no wash so it stays rich. */
+.glass.glass--cobalt,
+.glass.glass--amber,
+.toggle.toggle[aria-pressed="true"] {
   --veil: rgb(255 255 255 / 0.06);
   --grain: 680px;
 }
@@ -101,10 +102,6 @@ body {
 .glass.glass--amber {
   --tint: #e0a62a;
   color: var(--ink);
-}
-.glass.glass--oxblood {
-  --tint: #8a252b;
-  color: #fff;
 }
 
 .pane {
@@ -146,8 +143,7 @@ body {
   /* The name pane is wider by the mullion/bar difference so the strip lines up with the field. */
   grid-template-columns:
     calc(var(--side) + var(--mullion) - var(--bar))
-    minmax(0, 1.05fr) minmax(0, 1.45fr) minmax(0, 1.1fr)
-    4.5rem 8.5rem 8.5rem;
+    minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
   min-height: clamp(7rem, 16vh, 9.5rem);
 }
 
@@ -305,15 +301,16 @@ body {
   position: relative;
   z-index: 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 0.15rem 0.75rem;
+  gap: 0.75rem;
   margin: 0;
   font-size: 0.9375rem;
   line-height: 1.25;
 }
 .work__title {
+  min-width: 0;
   font-weight: 600;
   text-wrap: balance;
 }
@@ -323,19 +320,34 @@ body {
   color: var(--ink-soft);
 }
 
-/* The sticker is applied inside the same inset, never touching the bars. */
+/* The sticker is applied by hand inside the same inset: 1–2° off square, never touching the bars. */
+.work__sticker,
+.sticker-pane__img {
+  transform: rotate(var(--tilt, 0deg));
+}
 .work__sticker {
   position: relative;
   z-index: 1;
   flex: 1;
   min-height: 0;
   margin: 0.25rem 4%;
+  transition: transform var(--t-glass) var(--ease-glass);
 }
 .work__sticker img,
 .sticker-pane__img img {
   object-fit: contain;
-  /* Applied vinyl: a tight contact shadow and a soft lift, both falling down. */
-  filter: drop-shadow(0 1px 0.6px rgb(0 0 0 / 0.24)) drop-shadow(0 4px 6px rgb(20 24 28 / 0.12));
+  /* Applied vinyl: a tight contact shadow pressed onto the glass, and a faint fall-off below. */
+  filter: drop-shadow(0 0.5px 0.5px rgb(0 0 0 / 0.32)) drop-shadow(0 2px 3px rgb(20 24 28 / 0.12));
+  transition: filter var(--t-glass) var(--ease-glass);
+}
+/* Lit from behind, the sticker lifts off the glass a touch. The wall never moves; the sticker does. */
+.lit:hover .work__sticker,
+.lit:focus-visible .work__sticker {
+  transform: translateY(-2px) rotate(var(--tilt, 0deg));
+}
+.lit:hover .work__sticker img,
+.lit:focus-visible .work__sticker img {
+  filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.22)) drop-shadow(0 9px 12px rgb(20 24 28 / 0.2));
 }
 
 /* Backlight: the glass brightens from behind, warm light gathers inside the bars. */
@@ -369,7 +381,6 @@ body {
 }
 /* Colour glass lit from behind glows at its edges but keeps its colour. */
 .glass--cobalt.lit::before,
-.glass--oxblood.lit::before,
 .glass--amber.lit::before,
 .toggle[aria-pressed="true"]::before {
   display: none;
@@ -379,7 +390,6 @@ body {
   outline-offset: -7px;
 }
 .glass--cobalt.lit:focus-visible,
-.glass--oxblood.lit:focus-visible,
 .toggle[aria-pressed="true"]:not(.toggle--view):focus-visible {
   outline-color: #fff;
 }
@@ -440,6 +450,11 @@ body {
   text-decoration: none;
   outline: none;
 }
+/* In the schedule, matches always come first; the rest frost below them. */
+.schedule > li[data-frosted] {
+  order: 1;
+}
+
 .schedule__row > span:not(.frost) {
   position: relative;
   z-index: 1;
@@ -580,7 +595,7 @@ body {
 }
 .detail-image__frame {
   position: relative;
-  width: min(100%, 46rem);
+  width: min(100%, 38rem);
   aspect-ratio: 1;
   background: #fff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 18px rgb(20 24 28 / 0.08);
@@ -612,13 +627,13 @@ body {
 .sticker-pane {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  min-height: 15rem;
+  gap: 0.75rem;
+  min-height: 9rem;
 }
 .sticker-pane__img {
   position: relative;
   flex: 1;
-  min-height: 9rem;
+  min-height: 6rem;
 }
 .note {
   margin: 0;
@@ -698,19 +713,12 @@ body {
   overflow-wrap: anywhere;
 }
 
-/* ---------- responsive ---------- */
-
-@media (max-width: 1279px) {
-  .bay-head {
-    grid-template-columns:
-      calc(var(--side) + var(--mullion) - var(--bar))
-      minmax(0, 1fr) minmax(0, 1fr)
-      3.5rem 7.5rem 7.5rem;
-  }
-  .bay-head__strip--wide {
-    display: none;
-  }
+/* not found */
+.not-found {
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
 }
+
+/* ---------- responsive ---------- */
 
 @media (max-width: 1099px) {
   .wall:not(.wall--inner) {
@@ -723,38 +731,41 @@ body {
     grid-template-rows: none;
   }
   .bay-head {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 3rem 7rem 7rem;
-  }
-  .bay-head__strip--extra {
-    display: none;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
   }
 
-  /* Filters and the view switch share one transom row; the filters scroll if they run out of room. */
+  /* Filters become a glazed block of 3 × 2 panes; Wall and List stand beside it, one above the other. */
   .side {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 13rem;
     gap: var(--bar);
   }
   .side__group--filters {
-    display: flex;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-  }
-  .side__group--filters > li {
-    flex: 1 0 auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .side__group--filters .toggle {
     min-height: 3rem;
     white-space: nowrap;
   }
+  .view-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .view-pair .toggle {
+    min-height: 0;
+    height: 100%;
+  }
   .side__fill {
     display: none;
   }
 
+  /* Stacked walls: matches first, frosted panes after them, one clear pane closing the last gap. */
   .elevation {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: 21rem;
+    grid-auto-flow: row dense;
+  }
+  .elevation > li[data-frosted] {
+    order: 1;
   }
   .elevation > li {
     grid-column: auto;
@@ -766,8 +777,9 @@ body {
   .elevation > li.filler {
     display: none;
   }
-  .elevation > li.filler.keep-2 {
+  .elevation > li.filler--closer {
     display: grid;
+    order: 2;
   }
 
   /* Stacked detail: back and title come before the drawing. */
@@ -780,6 +792,9 @@ body {
   .detail-side > .back-pane,
   .detail-side > .title-pane {
     order: -1;
+  }
+  .sticker-pane__img {
+    min-height: 10rem;
   }
 
   .about-top {
@@ -803,18 +818,65 @@ body {
   .side {
     grid-template-columns: minmax(0, 1fr);
   }
+  .view-pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .view-pair .toggle {
+    min-height: 3rem;
+  }
   .elevation > li.is-featured {
     grid-column: 1 / -1;
   }
 
-  /* The schedule folds to two lines per row: number, title, year; then kind, context, medium. */
+  /* The schedule folds to two lines per row: number, title, kind, year; then context and medium. */
   .schedule__cols {
-    grid-template-columns: 1.75rem minmax(0, 1fr) 2.75rem;
+    grid-template-columns: 1.75rem minmax(0, 1.4fr) minmax(0, 1fr) 2.75rem;
     column-gap: 0.75rem;
-    row-gap: 0.15rem;
+    row-gap: 0.2rem;
   }
   .schedule__head {
     display: none;
+  }
+  .schedule__year {
+    text-align: right;
+  }
+  .schedule__context {
+    grid-column: 2;
+    font-size: 0.875rem;
+  }
+  .schedule__medium {
+    grid-column: 3 / 5;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 699px) {
+  .bay-head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 3.25rem;
+    min-height: 0;
+  }
+  .bay-head__name {
+    grid-column: 1 / -1;
+    min-height: 7rem;
+  }
+  .bay-head__strip {
+    display: none;
+  }
+
+  .side__group--filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .side .toggle,
+  .side__group--filters .toggle,
+  .view-pair .toggle {
+    min-height: 2.75rem;
+    font-size: 1rem;
+  }
+
+  /* On a phone each schedule row stacks: number, title, year; then kind, context, medium. */
+  .schedule__cols {
+    grid-template-columns: 1.75rem minmax(0, 1fr) 2.75rem;
   }
   .schedule__kind,
   .schedule__context,
@@ -825,21 +887,12 @@ body {
   .schedule__year {
     grid-row: 1;
     grid-column: 3;
-    text-align: right;
   }
-}
 
-@media (max-width: 699px) {
-  .bay-head {
-    grid-template-columns: 2.5rem minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: auto 3.25rem;
-    min-height: 0;
+  .not-found {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .bay-head__name {
-    grid-column: 1 / -1;
-    min-height: 7rem;
-  }
-  .bay-head__strip {
+  .not-found > [aria-hidden] {
     display: none;
   }
   .bay-head__link {
@@ -860,12 +913,8 @@ body {
   .elevation > li.is-featured {
     grid-row: auto;
   }
-  .elevation > li.filler.keep-2 {
+  .elevation > li.filler--closer {
     display: none;
-  }
-  .elevation > li.filler.keep-1 {
-    display: grid;
-    min-height: 1.25rem;
   }
 
   .bay-foot {

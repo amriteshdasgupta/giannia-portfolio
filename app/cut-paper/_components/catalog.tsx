@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useEffect, useState } from "react"
 import { kindLabel, kinds, works, type Kind, type Work } from "@/lib/works"
 import { Mark, markUrl } from "./marks"
-import { kindColour, sizeOf, type Size } from "./sheet"
+import { kindColour, pack, sizeOf, type Size } from "./sheet"
 import type { Dims } from "./sticker-size"
 import { Sticker } from "./sticker"
 
@@ -29,7 +29,7 @@ function Chips({ value, onChange }: { value: Filter; onChange: (f: Filter) => vo
     <div
       role="group"
       aria-label="Filter works by kind"
-      className="cp-chips -mx-5 flex items-center gap-x-5 overflow-x-auto px-12 py-4 sm:mx-0 sm:flex-wrap sm:gap-y-3 sm:overflow-visible sm:p-0 sm:pl-9"
+      className="cp-chips -mx-5 flex w-[calc(100%+2.5rem)] items-center gap-x-5 overflow-x-auto px-5 py-4 sm:-mx-10 sm:w-[calc(100%+5rem)] sm:px-10 lg:mx-0 lg:w-auto lg:flex-wrap lg:gap-y-3 lg:overflow-visible lg:p-0"
     >
       {options.map((o) => {
         const active = o.value === value
@@ -84,23 +84,25 @@ function ViewToggle({ value, onChange }: { value: View; onChange: (v: View) => v
 
 /* ---------- the sheet of stickers ---------- */
 
-const maxh: Record<Size, string> = { xl: "var(--maxh-xl)", l: "var(--maxh-l)", m: "var(--maxh-m)", s: "var(--maxh-s)" }
 const phoneWidth: Record<Size, string> = { xl: "100%", l: "90%", m: "84%", s: "76%" }
 const sizesFor: Record<Size, string> = {
-  xl: "(min-width: 1024px) 420px, (min-width: 640px) 46vw, 92vw",
-  l: "(min-width: 1024px) 360px, (min-width: 640px) 46vw, 86vw",
-  m: "(min-width: 1024px) 320px, (min-width: 640px) 46vw, 80vw",
+  xl: "(min-width: 1024px) 520px, (min-width: 640px) 46vw, 92vw",
+  l: "(min-width: 1024px) 420px, (min-width: 640px) 46vw, 86vw",
+  m: "(min-width: 1024px) 340px, (min-width: 640px) 46vw, 80vw",
   s: "(min-width: 1024px) 280px, (min-width: 640px) 46vw, 72vw",
 }
 
 function Sheet({ shown, aside, dims, reduce }: { shown: Work[]; aside: Work[]; dims: Record<string, Dims>; reduce: boolean }) {
   const layout = reduce ? false : ("position" as const)
   const ar = (w: Work) => (dims[w.slug]!.w / dims[w.slug]!.h).toFixed(3)
+  const slots = pack(shown)
+  const firstAsideRow = Math.max(0, ...slots.map((s) => s.row + s.rows - 1)) + 1
 
   return (
     <ul className="cp-sheet m-0 list-none p-0">
       {shown.map((w, i) => {
         const size = sizeOf(w)
+        const slot = slots[i]!
         return (
           <motion.li
             key={w.slug}
@@ -113,20 +115,25 @@ function Sheet({ shown, aside, dims, reduce }: { shown: Work[]; aside: Work[]; d
             style={
               {
                 "--ar": ar(w),
-                "--maxh": maxh[size],
+                "--size": `var(--maxh-${size})`,
+                "--size-lg": `var(--maxh-${slot.size === "xl" ? "xl" : slot.size})`,
                 "--wpct-sm": phoneWidth[size],
                 "--mi-sm": size === "xl" ? "auto" : i % 2 ? "auto 0" : "0 auto",
+                "--gc": `${slot.col} / span ${slot.span}`,
+                "--gr": `${slot.row} / span ${slot.rows}`,
+                // earlier rows lie on top, so a lower piece never covers a label above it
+                "--z": 40 - slot.row,
               } as React.CSSProperties
             }
           >
-            <Sticker work={w} dims={dims[w.slug]!} sizes={sizesFor[size]} eager={i < 3} />
+            <Sticker work={w} dims={dims[w.slug]!} sizes={sizesFor[slot.size]} />
           </motion.li>
         )
       })}
 
       {aside.length > 0 ? <li key="break" aria-hidden="true" className="cp-break" /> : null}
 
-      {aside.map((w) => (
+      {aside.map((w, i) => (
         <motion.li
           key={w.slug}
           layout={layout}
@@ -137,7 +144,14 @@ function Sheet({ shown, aside, dims, reduce }: { shown: Work[]; aside: Work[]; d
           data-ghost="true"
           aria-hidden="true"
           inert
-          style={{ "--ar": ar(w) } as React.CSSProperties}
+          style={
+            {
+              "--ar": ar(w),
+              "--gc": `${(i % 6) * 2 + 1} / span 2`,
+              "--gr": `${firstAsideRow + Math.floor(i / 6)}`,
+              "--z": 0,
+            } as React.CSSProperties
+          }
         >
           <Sticker work={w} dims={dims[w.slug]!} sizes="140px" bare />
         </motion.li>
@@ -181,7 +195,7 @@ function IndexList({ items }: { items: Work[] }) {
       <tbody>
         {items.map((w) => (
           <tr key={w.slug} className="group relative border-b border-rule align-baseline hover:bg-cobalt/[0.05]">
-            <td className="py-3 pr-3 font-marker text-[1.75rem] leading-none text-cobalt tabular-nums">{String(w.no).padStart(2, "0")}</td>
+            <td className="py-3 pr-3 text-[0.8125rem] text-ink-soft tabular-nums">{String(w.no).padStart(2, "0")}</td>
             <td className="py-3 pr-4 leading-snug">
               <Link
                 href={`/cut-paper/${w.slug}`}
@@ -247,7 +261,7 @@ export function Catalog({ dims, initialFilter, initialView }: { dims: Record<str
         {filter === "all" ? `All ${shown.length} works` : `${label}: ${shown.length} of ${works.length}`}
       </p>
 
-      <div className="mt-10 sm:mt-14">
+      <div className="mt-6 sm:mt-8">
         {view === "stickers" ? <Sheet shown={shown} aside={aside} dims={dims} reduce={reduce} /> : <IndexList items={shown} />}
       </div>
     </section>

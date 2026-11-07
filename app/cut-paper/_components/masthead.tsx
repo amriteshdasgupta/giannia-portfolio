@@ -7,9 +7,9 @@ function NavLink({ href, children, current }: { href: string; children: React.Re
     <Link
       href={href}
       aria-current={current ? "page" : undefined}
-      className="relative inline-flex h-11 min-w-24 items-center justify-center px-4 text-[1rem] font-semibold text-cobalt hover:text-ink sm:px-5 sm:text-[1.0625rem]"
+      className="relative inline-flex h-11 min-w-[7.25rem] items-center justify-center px-5 pb-px text-[1rem] font-semibold text-cobalt hover:text-ink sm:text-[1.0625rem]"
     >
-      <Mark name="box" className="absolute -inset-x-2 -inset-y-1" />
+      <Mark name="box" className="absolute inset-0" />
       <span className="relative">{children}</span>
     </Link>
   )
@@ -23,7 +23,11 @@ export function Masthead({ home = false, current }: { home?: boolean; current?: 
   const Name = home ? "h1" : "p"
   const name = (
     <span className="flex items-end gap-3 sm:gap-4">
-      <Mark name="arch" className={`aspect-[759/734] shrink-0 ${home ? "mb-2 w-11 sm:mb-3 sm:w-[4.5rem]" : "mb-1.5 w-10 sm:mb-2 sm:w-14"}`} />
+      <span className={`relative shrink-0 ${home ? "mb-2 w-11 sm:mb-3 sm:w-[4.5rem]" : "mb-1.5 w-10 sm:mb-2 sm:w-14"}`}>
+        <Mark name="arch" className="aspect-[759/734] w-full" />
+        <Mark name="sparks" className="absolute -top-[38%] -left-[34%] aspect-[437/485] w-[38%]" />
+        <Mark name="sparks" className="absolute -top-[38%] -right-[34%] aspect-[437/485] w-[38%] -scale-x-100" />
+      </span>
       <span className="relative block pb-3">
         <span className={`block font-marker leading-[0.9] text-ink ${home ? "text-[3.75rem] sm:text-[6rem]" : "text-[3.25rem] sm:text-[4.5rem]"}`}>
           {about.name}

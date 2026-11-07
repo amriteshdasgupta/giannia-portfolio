@@ -52,7 +52,7 @@ export default async function WorkPage({ params }: Props) {
           </span>
         </LinkTab>
       }
-      footer={<TitleStamp cells={["Giannia — portfolio", `No. ${pad(w.no)}`, "Placeholder work"]} />}
+      footer={<TitleStamp cells={[`No. ${pad(w.no)} of ${pad(works.length)}`, "Placeholder work"]} />}
     >
       <article className="grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
         <h1 className="font-tech text-[clamp(2.25rem,4vw,3.5rem)] leading-[1.05] text-balance lg:col-start-2 lg:row-start-1">

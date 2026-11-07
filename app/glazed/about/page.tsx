@@ -4,8 +4,6 @@ import { about } from "@/lib/works"
 import { Arrow, FootBay, HeaderBay } from "../_components/bays"
 import { grainOffset } from "../_components/elevation-map"
 
-type Style = React.CSSProperties
-
 export const metadata: Metadata = {
   title: "About",
   description: about.bio[0],
@@ -19,7 +17,6 @@ function Field({
   value,
   href,
   glass,
-  index,
   id,
   large = false,
 }: {
@@ -27,7 +24,6 @@ function Field({
   value: string
   href?: string
   glass?: "cobalt" | "amber"
-  index: number
   id?: string
   large?: boolean
 }) {
@@ -40,11 +36,11 @@ function Field({
     </dl>
   )
   return live ? (
-    <a id={id} href={href} className={className} style={grainOffset(index) as Style}>
+    <a id={id} href={href} className={className} style={grainOffset(`about:${label}`)}>
       {body}
     </a>
   ) : (
-    <div id={id} className={className} style={grainOffset(index) as Style}>
+    <div id={id} className={className} style={grainOffset(`about:${label}`)}>
       {body}
     </div>
   )
@@ -56,10 +52,10 @@ export default function AboutPage() {
       <HeaderBay />
       <main className="inner">
         <div className="bay about-top">
-          <div className="pane glass pane-pad" style={grainOffset(11) as Style}>
+          <div className="pane glass pane-pad" style={grainOffset("about:11")}>
             <h1 className="display title-xl relative z-[1]">About</h1>
           </div>
-          <div className="pane glass pane-pad flex flex-col gap-4" style={grainOffset(12) as Style}>
+          <div className="pane glass pane-pad flex flex-col gap-4" style={grainOffset("about:12")}>
             {about.bio.map((para) => (
               <p key={para} className="prose relative z-[1]">
                 {para}
@@ -75,32 +71,30 @@ export default function AboutPage() {
             value={about.email}
             href={`mailto:${about.email}`}
             glass="cobalt"
-            index={13}
             large
           />
-          <Field label="School" value={about.school} index={14} />
-          <Field label="Years" value={about.years} index={15} />
+          <Field label="School" value={about.school} />
+          <Field label="Years" value={about.years} />
         </div>
 
         <nav className="bay about-links" aria-label="CV and links">
-          <Field label="CV" value="Download" href={about.cv} glass="amber" index={16} />
-          {about.links.map((l, i) => (
+          <Field label="CV" value="Download" href={about.cv} glass="amber" />
+          {about.links.map((l) => (
             <Field
               key={l.label}
               label={l.label}
               value={l.href.replace(/^https?:\/\/(www\.)?/, "")}
               href={l.href}
-              index={17 + i}
             />
           ))}
-          <Link href="/glazed" className="pane glass lit link-pane back-pane pane-pad" style={grainOffset(20) as Style}>
+          <Link href="/glazed" className="pane glass lit link-pane back-pane pane-pad" style={grainOffset("about:20")}>
             <Arrow dir="left" />
             <span>All works</span>
           </Link>
-          <div className="pane glass glass--oxblood filler" style={grainOffset(21) as Style} aria-hidden="true" />
+          <div className="pane glass filler" style={grainOffset("about:gap")} aria-hidden="true" />
         </nav>
       </main>
-      <FootBay>Placeholder details — real ones coming</FootBay>
+      <FootBay>Placeholder details</FootBay>
     </div>
   )
 }

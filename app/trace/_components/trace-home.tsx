@@ -45,13 +45,14 @@ export function TraceHome({
       <TraceShell
         header={
           <Masthead
-            current={view === "index" ? "index" : "sheet"}
-            indexHref={homeHref({ kind, view: view === "index" ? "sheet" : "index" })}
-            onIndexClick={() => showView(view === "index" ? "sheet" : "index")}
+            current={view}
+            sheetHref={homeHref({ kind, view: "sheet" })}
+            indexHref={homeHref({ kind, view: "index" })}
+            onView={showView}
           />
         }
         aside={<FilterTabs value={kind} onChange={choose} />}
-        footer={<TitleStamp cells={["Giannia — portfolio", "Sheet 01", "Placeholder works"]} />}
+        footer={<TitleStamp cells={[`${shown.length} of ${works.length} works`, "Placeholder works"]} />}
       >
         <p className="sr-only" aria-live="polite">
           {label ? `${label}: ${shown.length} of ${works.length} works` : `All ${works.length} works`}

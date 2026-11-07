@@ -81,7 +81,7 @@ export default async function WorkPage({ params }: Props) {
                 ))}
               </dl>
 
-              <p className="mt-8 mb-0 font-marker text-[1.625rem] leading-snug text-cobalt">{work.note}</p>
+              {work.note ? <p className="mt-8 mb-0 font-marker text-[1.625rem] leading-snug text-cobalt">{work.note}</p> : null}
             </header>
           </div>
 
@@ -102,7 +102,7 @@ export default async function WorkPage({ params }: Props) {
                 width={sheet.w}
                 height={sheet.h}
                 sizes="(min-width: 1024px) 36vw, 92vw"
-                className="block h-auto w-full bg-white p-3 shadow-[1px_6px_14px_-4px_rgb(74_50_24/0.28)]"
+                className="block h-auto w-full bg-[#fbf7ef] p-3 shadow-[1px_6px_14px_-4px_rgb(74_50_24/0.28)]"
               />
             </div>
           </div>

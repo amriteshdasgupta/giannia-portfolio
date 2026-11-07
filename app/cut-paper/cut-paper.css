@@ -58,6 +58,7 @@ body {
 
 /* ---------- the sheet of stickers ---------- */
 
+/* phones and tablets: pieces wrap in a loose centred run */
 .cp-sheet {
   display: flex;
   flex-wrap: wrap;
@@ -68,15 +69,23 @@ body {
 
 .cp-cell {
   --rk: 0.5;
+  --jk: 0.25;
   --maxh-xl: 400px;
   --maxh-l: 360px;
   --maxh-m: 330px;
   --maxh-s: 300px;
   --maxh-g: 110px;
+  --maxh: var(--size, var(--maxh-m));
   --wpct: var(--wpct-sm, 100%);
+  position: relative;
   width: min(var(--wpct), calc(var(--maxh) * var(--ar)));
   margin-inline: var(--mi-sm, 0);
   min-width: 0;
+}
+
+.cp-cell:hover,
+.cp-cell:focus-within {
+  z-index: 60;
 }
 
 /* a zero-height row break, so set-aside stickers gather on their own rows */
@@ -85,9 +94,16 @@ body {
   height: 0;
 }
 
+.cp-cell[data-ghost="true"] {
+  --rk: 0.6;
+  width: min(30%, calc(var(--maxh-g) * var(--ar)));
+  margin-inline: 0;
+}
+
 @media (min-width: 640px) {
   .cp-cell {
     --rk: 0.8;
+    --jk: 0.5;
     --wpct: 46%;
     --maxh-xl: 340px;
     --maxh-l: 280px;
@@ -98,39 +114,56 @@ body {
   }
 
   .cp-sheet {
-    gap: 3.5rem 3rem;
+    gap: 3rem 2.5rem;
   }
 }
 
+/* desk: a 12-column sheet the pieces are laid on, see pack() in sheet.ts */
 @media (min-width: 1024px) {
-  .cp-cell {
-    --rk: 1;
-    --wpct: 40%;
-    --maxh-xl: 360px;
-    --maxh-l: 300px;
-    --maxh-m: 265px;
-    --maxh-s: 235px;
-    --maxh-g: 130px;
+  .cp-sheet {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 2rem 1.5rem;
   }
 
-  .cp-sheet {
-    gap: 4rem 4rem;
+  .cp-cell {
+    --rk: 1;
+    --jk: 1;
+    --wpct: 100%;
+    --maxh-xl: 400px;
+    --maxh-l: 280px;
+    --maxh-m: 245px;
+    --maxh-s: 210px;
+    --maxh-g: 120px;
+    --maxh: var(--size-lg, var(--maxh-m));
+    grid-column: var(--gc);
+    grid-row: var(--gr);
+    justify-self: center;
+    z-index: var(--z, 0);
+  }
+
+  .cp-cell:hover,
+  .cp-cell:focus-within {
+    z-index: 60;
+  }
+
+  .cp-cell[data-ghost="true"] {
+    width: min(100%, calc(var(--maxh-g) * var(--ar)));
+    justify-self: center;
+  }
+
+  .cp-break {
+    display: none;
   }
 }
 
 @media (min-width: 1280px) {
   .cp-cell {
-    --maxh-xl: 390px;
+    --maxh-xl: 480px;
     --maxh-l: 320px;
-    --maxh-m: 285px;
-    --maxh-s: 250px;
+    --maxh-m: 280px;
+    --maxh-s: 240px;
   }
-}
-
-.cp-cell[data-ghost="true"] {
-  --rk: 0.6;
-  width: min(30%, calc(var(--maxh-g) * var(--ar)));
-  margin-inline: 0;
 }
 
 .cp-sticker {
@@ -145,7 +178,7 @@ body {
 .cp-tilt {
   position: relative;
   rotate: calc(var(--r) * var(--rk) * 1deg);
-  translate: var(--dx) var(--dy);
+  translate: calc(var(--dx) * var(--jk)) calc(var(--dy) * var(--jk));
   transition:
     rotate 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
@@ -154,7 +187,7 @@ body {
 .cp-sticker:hover .cp-tilt,
 .cp-sticker:focus-visible .cp-tilt {
   rotate: calc(var(--r2) * var(--rk) * 1deg);
-  translate: var(--dx) calc(var(--dy) - 6px);
+  translate: calc(var(--dx) * var(--jk)) calc(var(--dy) * var(--jk) - 6px);
 }
 
 .cp-cutout {
@@ -263,6 +296,6 @@ body {
   .cp-sticker:hover .cp-tilt,
   .cp-sticker:focus-visible .cp-tilt {
     rotate: calc(var(--r) * var(--rk) * 1deg);
-    translate: var(--dx) var(--dy);
+    translate: calc(var(--dx) * var(--jk)) calc(var(--dy) * var(--jk));
   }
 }

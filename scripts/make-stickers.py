@@ -20,7 +20,7 @@ OUT = ROOT / "public" / "works"
 STICKER = OUT / "sticker"
 
 WORK = 512  # mask is computed at this size, then scaled back up
-INK_THRESHOLD = 236  # any channel darker than this counts as drawing
+INK_THRESHOLD = 222  # any channel darker than this counts as drawing; faint vignette wash is cut away
 CLOSE = 31  # px at WORK size: bridges gaps so the outline reads as one shape
 BORDER = 13  # px at WORK size: width of the white kiss-cut border
 

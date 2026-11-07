@@ -6,7 +6,7 @@ import { motion, type Transition } from "framer-motion"
 import { useRef, useState, type CSSProperties, type SyntheticEvent } from "react"
 import { stickerOf, type Work } from "@/lib/works"
 import type { Size } from "./image-size"
-import { LeaderLine, PencilEllipse } from "./pencil"
+import { GraphiteRule, LeaderLine, PencilEllipse } from "./pencil"
 import { scatter } from "./scatter"
 
 /** Springy but calm: settles in about half a second. */
@@ -28,7 +28,7 @@ export function Sticker({
   sunk?: boolean
   /** Red pencil loop around the title */
   looped?: boolean
-  /** Pointed at: lift and draw the annotation */
+  /** Pointed at: lift and draw the context annotation */
   pointed?: boolean
   onPoint?: (slug: string | null) => void
   eager?: boolean
@@ -38,7 +38,7 @@ export function Sticker({
   const s = scatter(w.slug)
   const aspect = size.width / size.height
   // Portrait sheets get narrower so every sticker covers roughly the same area
-  const width = big ? 92 : Math.round((70 + s.grow * 18) * Math.min(1, aspect) ** 0.9)
+  const width = big ? 96 : Math.round((70 + s.grow * 18) * Math.min(1, aspect) ** 0.9)
 
   const style = {
     "--rot-lg": `${s.rot.toFixed(2)}deg`,
@@ -92,20 +92,21 @@ export function Sticker({
             draggable={false}
           />
           <span className="sticker-label" aria-hidden>
-            <span className="relative">
+            <span className="sticker-title">
               {w.title}
+              <GraphiteRule className="sticker-rule" />
               <PencilEllipse on={looped} big={big && !sunk} />
             </span>
             <span className="sticker-year">{w.year}</span>
           </span>
           <span className="sr-only">
-            , {w.context}, {w.year}
+            , {w.year}, {w.context}
           </span>
         </Link>
         {sunk ? null : (
           <span ref={annot} aria-hidden className="sticker-annot" data-on={pointed} data-flip={flip}>
             <LeaderLine draw />
-            {w.context} · {w.year}
+            {w.context}
           </span>
         )}
       </div>

@@ -59,12 +59,12 @@ export function Catalog({
     <>
       <section className="side" aria-label="Filter and view">
         <ul className="side__group side__group--filters" aria-label="Filter by kind">
-          {filters.map((f, i) => (
+          {filters.map((f) => (
             <li key={f.value}>
               <button
                 type="button"
                 className="pane glass lit toggle"
-                style={grainOffset(20 + i) as Style}
+                style={grainOffset(`filter:${f.value}`)}
                 aria-pressed={filter === f.value}
                 onClick={() => onFilter?.(f.value)}
               >
@@ -80,7 +80,7 @@ export function Catalog({
           <button
             type="button"
             className="pane glass lit toggle toggle--view"
-            style={grainOffset(30) as Style}
+            style={grainOffset("view:wall")}
             aria-pressed={view === "wall"}
             onClick={() => onView?.("wall")}
           >
@@ -89,7 +89,7 @@ export function Catalog({
           <button
             type="button"
             className="pane glass lit toggle toggle--view"
-            style={grainOffset(31) as Style}
+            style={grainOffset("view:list")}
             aria-pressed={view === "list"}
             onClick={() => onView?.("list")}
           >
@@ -100,11 +100,11 @@ export function Catalog({
           {litCount} of {works.length} works shown
         </p>
         <div className="side__fill" aria-hidden="true">
-          <div className="pane glass glass--oxblood" style={grainOffset(33) as Style} />
-          <div className="pane glass" style={grainOffset(36) as Style} />
+          <div className="pane glass" style={grainOffset("side:fill-a")} />
+          <div className="pane glass" style={grainOffset("side:fill-b")} />
           <div className="side__fill-row">
-            <div className="pane glass" style={grainOffset(34) as Style} />
-            <div className="pane glass glass--amber" style={grainOffset(35) as Style} />
+            <div className="pane glass" style={grainOffset("side:fill-c")} />
+            <div className="pane glass" style={grainOffset("side:fill-d")} />
           </div>
         </div>
       </section>
@@ -123,13 +123,11 @@ function Elevation({ lit }: { lit: (w: Work) => boolean }) {
       {elevation.map((cell, i) => {
         const [c, cs, r, rs] = cell.area
         const place = { "--c": c, "--cs": cs, "--r": r, "--rs": rs } as Style
-        const grain = grainOffset(40 + i) as Style
 
         if (cell.type === "filler") {
-          const keep = [cell.keepOnPhone && "keep-1", cell.keepOnTablet && "keep-2"].filter(Boolean).join(" ")
           return (
-            <li key={`f${i}`} className={`filler ${keep}`} style={place} aria-hidden="true">
-              <div className={`pane glass glass--${cell.glass}`} style={grain} />
+            <li key={`f${i}`} className={cell.closer ? "filler filler--closer" : "filler"} style={place} aria-hidden="true">
+              <div className="pane glass" style={grainOffset(`filler:${i}`)} />
             </li>
           )
         }
@@ -145,7 +143,7 @@ function Elevation({ lit }: { lit: (w: Work) => boolean }) {
             aria-hidden={on ? undefined : true}
             inert={!on}
           >
-            <WorkPane work={work} style={grain} />
+            <WorkPane work={work} />
           </li>
         )
       })}
@@ -156,7 +154,7 @@ function Elevation({ lit }: { lit: (w: Work) => boolean }) {
 function Schedule({ lit }: { lit: (w: Work) => boolean }) {
   return (
     <div className="schedule">
-      <div className="pane glass schedule__head schedule__cols" style={grainOffset(60) as Style} aria-hidden="true">
+      <div className="pane glass schedule__head schedule__cols" style={grainOffset("schedule:head")} aria-hidden="true">
         <span>No.</span>
         <span>Title</span>
         <span>Kind</span>
@@ -165,7 +163,7 @@ function Schedule({ lit }: { lit: (w: Work) => boolean }) {
         <span>Medium</span>
       </div>
       <ol className="schedule" aria-label="Schedule of works">
-        {works.map((w, i) => {
+        {works.map((w) => {
           const on = lit(w)
           return (
             <li
@@ -178,7 +176,7 @@ function Schedule({ lit }: { lit: (w: Work) => boolean }) {
               <Link
                 href={`/glazed/${w.slug}`}
                 className="pane glass lit schedule__row schedule__cols"
-                style={grainOffset(61 + i) as Style}
+                style={grainOffset(`row:${w.slug}`)}
               >
                 <span className="schedule__no">{pad(w.no)}</span>
                 <span className="schedule__title">{w.title}</span>
