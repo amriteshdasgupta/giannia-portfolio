@@ -1,0 +1,823 @@
+@import "tailwindcss";
+
+/*
+  Glazed Partition. One steel-framed glass wall seen in elevation.
+  The black between panes is the frame: every line on the page is a gap
+  showing the #151515 ground through a CSS grid. Nothing else draws lines.
+*/
+
+@theme {
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --color-bar: #151515;
+  --color-cobalt: #1d45b0;
+  --color-amber: #d49a1e;
+  --color-oxblood: #7a1f24;
+}
+
+:root {
+  --ink: #151515;
+  --ink-soft: #3a3d40;
+  --bar: 9px;
+  --mullion: 14px;
+  --side: 16rem;
+  --glass-clear: #e3e8ec;
+  --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-glass: 480ms;
+  color-scheme: light;
+  scrollbar-color: #55585b var(--ink);
+}
+
+@media (max-width: 699px) {
+  :root {
+    --bar: 6px;
+    --mullion: 10px;
+  }
+}
+
+html {
+  background: var(--ink);
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--ink);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-stretch: 100%;
+  font-size: 1rem;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  caret-color: var(--color-cobalt);
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-cobalt);
+  color: #fff;
+}
+
+/* ---------- glass ---------- */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--tint, var(--glass-clear));
+  /* A daylight veil over the cast texture keeps the relief readable but calm. */
+  background-image:
+    linear-gradient(var(--veil, rgb(244 247 249 / 0.46)), var(--veil, rgb(244 247 249 / 0.46))),
+    url(/textures/seeded-glass.jpg);
+  background-size: auto, var(--grain, 680px);
+  background-position: 0 0, var(--gx, 0px) var(--gy, 0px);
+  background-blend-mode: normal, multiply;
+  color: var(--ink);
+  transition: background-color var(--t-glass) var(--ease-glass);
+}
+
+/* Colour glass: the same seeded sheet, cast in colour, with a thinner veil. */
+.glass--cobalt,
+.glass--amber,
+.glass--oxblood,
+.toggle[aria-pressed="true"] {
+  --veil: rgb(255 255 255 / 0.06);
+}
+.glass.glass--cobalt {
+  --tint: #2350c4;
+  color: #fff;
+}
+.glass.glass--amber {
+  --tint: #e0a62a;
+  color: var(--ink);
+}
+.glass.glass--oxblood {
+  --tint: #8a252b;
+  color: #fff;
+}
+
+.pane {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ---------- the wall ---------- */
+
+.wall {
+  display: grid;
+  gap: var(--mullion);
+  padding: var(--mullion);
+  min-height: 100dvh;
+  grid-template-columns: var(--side) minmax(0, 1fr);
+  grid-template-areas:
+    "head head"
+    "side field"
+    "foot foot";
+  grid-template-rows: auto 1fr auto;
+}
+
+.bay-head {
+  grid-area: head;
+  display: grid;
+  gap: var(--bar);
+  /* The name pane is wider by the mullion/bar difference so the strip lines up with the field. */
+  grid-template-columns:
+    calc(var(--side) + var(--mullion) - var(--bar))
+    minmax(0, 1.05fr) minmax(0, 1.45fr) minmax(0, 1.1fr)
+    4.5rem 8.5rem 8.5rem;
+  min-height: clamp(7rem, 16vh, 9.5rem);
+}
+
+.bay-head__name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem 1.15rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.display {
+  font-stretch: 62%;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 0.95;
+}
+
+.bay-head__name .display {
+  font-size: clamp(2rem, 3.1vw, 2.85rem);
+}
+
+.bay-head__strip {
+  display: flex;
+  align-items: flex-end;
+  padding: 0.9rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.bay-head__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  font-size: 1.125rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---------- side: filters and view ---------- */
+
+.side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mullion);
+}
+
+.side__group {
+  display: grid;
+  gap: var(--bar);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.side__fill {
+  flex: 1;
+  display: grid;
+  grid-template-rows: minmax(4rem, 1fr) 5.5rem;
+  gap: var(--bar);
+}
+.side__fill-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--bar);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.6rem 1.15rem;
+  font: inherit;
+  font-size: 1.125rem;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  border: 0;
+  border-radius: 0;
+}
+.toggle__count {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+.toggle[aria-pressed="true"] {
+  --tint: #2350c4;
+  color: #fff;
+}
+.toggle[aria-pressed="true"] .toggle__count {
+  color: #dce4f7;
+}
+.toggle--view[aria-pressed="true"] {
+  --tint: #e0a62a;
+  color: var(--ink);
+}
+.toggle--view[aria-pressed="true"] .toggle__count {
+  color: var(--ink);
+}
+
+.view-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--bar);
+}
+.view-pair .toggle {
+  justify-content: center;
+  min-height: 3.1rem;
+  padding-inline: 0.5rem;
+}
+
+.count {
+  margin: 0;
+  padding: 0.75rem 1.15rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+/* ---------- field: the elevation of work panes ---------- */
+
+.field {
+  grid-area: field;
+  min-width: 0;
+}
+
+.elevation {
+  display: grid;
+  gap: var(--bar);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: clamp(8rem, 16.5vh, 11rem);
+}
+
+.elevation > li {
+  grid-column: var(--c) / span var(--cs);
+  grid-row: var(--r) / span var(--rs);
+  min-width: 0;
+  display: grid;
+}
+
+.work {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 1rem 1rem;
+  color: var(--ink);
+  text-decoration: none;
+  outline: none;
+}
+
+.work__caption {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+.work__title {
+  font-weight: 600;
+}
+.work__sep {
+  padding-inline: 0.3em;
+}
+/* In narrow panes the title takes its own line instead of breaking mid-name. */
+@container (max-width: 28rem) {
+  .work__title {
+    display: block;
+  }
+  .work__title + .work__sep {
+    display: none;
+  }
+}
+
+.work__sticker {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  margin-top: 0.75rem;
+}
+.work__sticker img {
+  object-fit: contain;
+  /* Applied vinyl: a tight contact shadow and a soft lift, both falling down. */
+  filter: drop-shadow(0 1px 0.6px rgb(0 0 0 / 0.24)) drop-shadow(0 4px 6px rgb(20 24 28 / 0.12));
+}
+
+.work__summary {
+  position: relative;
+  z-index: 1;
+  margin: 0.75rem 0 0;
+  max-width: 34ch;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.work--featured .work__caption {
+  font-size: 1rem;
+}
+
+/* Backlight: the glass brightens from behind, warm light gathers inside the bars. */
+.lit::before,
+.lit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-glass) var(--ease-glass);
+}
+.lit::before {
+  z-index: 0;
+  background: rgb(255 247 230);
+  mix-blend-mode: screen;
+}
+.lit::after {
+  /* Under the caption and sticker: the light gathers at the bars, behind what is applied to the glass. */
+  z-index: 0;
+  box-shadow:
+    inset 0 0 0 2px rgb(255 240 208 / 0.95),
+    inset 0 0 16px 5px rgb(255 212 140 / 0.7),
+    inset 0 0 56px 14px rgb(255 238 204 / 0.55);
+}
+.lit:hover::before,
+.lit:focus-visible::before {
+  opacity: 0.55;
+}
+.lit:hover::after,
+.lit:focus-visible::after {
+  opacity: 1;
+}
+.lit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -8px;
+}
+.glass--cobalt.lit:focus-visible,
+.glass--oxblood.lit:focus-visible,
+.toggle[aria-pressed="true"]:focus-visible {
+  outline-color: #fff;
+}
+
+/* Frost: filtered-out panes turn to translucent white. The frame does not move. */
+.frost {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background-color: rgb(246 248 249 / 0);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  transition:
+    background-color var(--t-glass) var(--ease-glass),
+    backdrop-filter var(--t-glass) var(--ease-glass),
+    -webkit-backdrop-filter var(--t-glass) var(--ease-glass);
+}
+[data-frosted] .frost {
+  background-color: rgb(246 248 249 / 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+[data-frosted] .lit::before,
+[data-frosted] .lit::after {
+  opacity: 0;
+}
+
+/* ---------- schedule (list view) ---------- */
+
+.schedule {
+  display: grid;
+  gap: var(--bar);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.schedule__cols {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1.7fr) minmax(0, 0.9fr) 3.5rem minmax(0, 1.3fr) minmax(0, 1.5fr);
+  column-gap: 1.25rem;
+  align-items: baseline;
+}
+
+.schedule__head {
+  padding: 0.7rem 1.15rem;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.schedule__row {
+  padding: 1rem 1.15rem;
+  min-height: 3.5rem;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-decoration: none;
+  outline: none;
+}
+.schedule__row > span:not(.frost) {
+  position: relative;
+  z-index: 1;
+}
+.schedule__no,
+.schedule__year {
+  font-variant-numeric: tabular-nums;
+}
+.schedule__title {
+  font-weight: 600;
+}
+.schedule__muted {
+  color: var(--ink-soft);
+}
+
+/* ---------- foot ---------- */
+
+.bay-foot {
+  grid-area: foot;
+  display: grid;
+  gap: var(--bar);
+  grid-template-columns: minmax(0, 1fr) 8.5rem;
+  min-height: 4.5rem;
+}
+.bay-foot__note {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0.75rem 1.15rem;
+  font-size: 1rem;
+}
+
+/* ---------- inner pages: detail and about ---------- */
+
+.wall--inner {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "head"
+    "body"
+    "foot";
+}
+.wall--inner .bay-head {
+  min-height: clamp(6rem, 13vh, 8rem);
+}
+.wall--inner .bay-head__name .display {
+  font-size: clamp(1.75rem, 2.6vw, 2.4rem);
+}
+
+.inner {
+  grid-area: body;
+  display: grid;
+  gap: var(--mullion);
+  min-width: 0;
+}
+
+.bay {
+  display: grid;
+  gap: var(--bar);
+  min-width: 0;
+}
+
+.pane-pad {
+  padding: 1.15rem 1.25rem 1.3rem;
+}
+
+.label {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  color: var(--ink-soft);
+}
+.glass--cobalt .label,
+.glass--oxblood .label {
+  color: #e3e8f7;
+}
+.glass--oxblood .label {
+  color: #f3dfe0;
+}
+
+.title-xl {
+  margin: 0;
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  text-wrap: balance;
+}
+
+.prose {
+  max-width: 65ch;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.link-pane {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+.link-pane > * {
+  position: relative;
+  z-index: 1;
+}
+
+.back-pane {
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  font-size: 1.0625rem;
+}
+
+.arrow {
+  width: 1.1em;
+  height: 1.1em;
+  flex: none;
+}
+
+/* detail */
+.detail-top {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+.detail-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 2.4vw, 2.25rem);
+  min-height: 24rem;
+}
+.detail-image__frame {
+  position: relative;
+  width: min(100%, 46rem);
+  aspect-ratio: 1;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12), 0 8px 18px rgb(20 24 28 / 0.08);
+}
+/* The drawing sits behind the glass: a faint seeded veil over it. */
+.detail-image__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url(/textures/seeded-glass.jpg) 0 0 / 420px;
+  mix-blend-mode: multiply;
+  opacity: 0.16;
+  pointer-events: none;
+}
+.detail-image__frame img {
+  object-fit: contain;
+}
+
+.detail-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bar);
+  min-width: 0;
+}
+.detail-side > .grow {
+  flex: 1;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.45rem 1.25rem;
+  margin: 0;
+  font-size: 0.9375rem;
+}
+.facts dt {
+  color: var(--ink-soft);
+}
+.facts dd {
+  margin: 0;
+}
+
+.sticker-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 15rem;
+}
+.sticker-pane__img {
+  position: relative;
+  flex: 1;
+  min-height: 9rem;
+}
+.sticker-pane__img img {
+  object-fit: contain;
+  filter: drop-shadow(0 1px 0.6px rgb(0 0 0 / 0.24)) drop-shadow(0 4px 6px rgb(20 24 28 / 0.12));
+}
+
+.sections {
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+}
+.sections h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.5rem;
+  font-stretch: 62%;
+  font-weight: 650;
+  line-height: 1.05;
+}
+
+.detail-nav {
+  grid-template-columns: minmax(0, 1fr) 4.5rem minmax(0, 1fr);
+  min-height: 6.5rem;
+}
+.detail-nav__next {
+  align-items: flex-end;
+  text-align: right;
+}
+.detail-nav__title {
+  font-size: 1.375rem;
+  font-stretch: 62%;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+/* about */
+.about-top {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+.about-mid {
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) minmax(0, 3fr);
+}
+.about-links {
+  grid-template-columns: repeat(2, minmax(0, 3fr)) minmax(0, 5fr) 4.5rem;
+}
+.about-email {
+  font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+  font-stretch: 62%;
+  font-weight: 650;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1099px) {
+  .wall:not(.wall--inner) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "side"
+      "field"
+      "foot";
+    grid-template-rows: none;
+  }
+  .bay-head {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 3rem 7rem 7rem;
+  }
+  .bay-head__strip--extra {
+    display: none;
+  }
+
+  .side {
+    gap: var(--bar);
+  }
+  .side__group--filters {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .side__group--filters > li {
+    flex: none;
+  }
+  .side__group--filters .toggle {
+    min-height: 3.1rem;
+    white-space: nowrap;
+  }
+  .side__group--view {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .side__fill {
+    display: none;
+  }
+
+  .elevation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 21rem;
+  }
+  .elevation > li {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .elevation > li.is-featured {
+    grid-column: 1 / -1;
+    grid-row: span 1;
+  }
+  .elevation > li.filler {
+    display: none;
+  }
+  .elevation > li.filler.keep-2 {
+    display: grid;
+  }
+
+  .detail-top,
+  .about-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .about-mid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .about-mid > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 699px) {
+  .bay-head {
+    grid-template-columns: 2.25rem minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 3.25rem;
+    min-height: 0;
+  }
+  .bay-head__name {
+    grid-column: 1 / -1;
+  }
+  .bay-head__strip {
+    display: none;
+  }
+  .bay-head__link {
+    font-size: 1rem;
+  }
+
+  .side__group--view {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .elevation {
+    grid-template-columns: minmax(0, 1fr);
+    grid-auto-rows: auto;
+  }
+  .elevation > li {
+    min-height: 19rem;
+  }
+  .elevation > li.is-featured {
+    min-height: 24rem;
+  }
+  .elevation > li.filler.keep-2 {
+    display: none;
+  }
+  .elevation > li.filler.keep-1 {
+    display: grid;
+    min-height: 1.25rem;
+  }
+
+  .schedule__cols {
+    grid-template-columns: 2rem minmax(0, 1fr) 2.75rem;
+    row-gap: 0.15rem;
+  }
+  .schedule__head {
+    display: none;
+  }
+  .schedule__kind,
+  .schedule__context,
+  .schedule__medium {
+    grid-column: 2 / 4;
+    font-size: 0.8125rem;
+  }
+  .schedule__year {
+    grid-row: 1;
+    grid-column: 3;
+    text-align: right;
+  }
+
+  .bay-foot {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+  }
+
+  .about-mid,
+  .about-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .about-links > .filler,
+  .detail-nav > .filler {
+    display: none;
+  }
+  .detail-nav {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .detail-image {
+    min-height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-glass: 1ms;
+  }
+}

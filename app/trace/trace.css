@@ -1,0 +1,531 @@
+@import "tailwindcss";
+
+/* The Trace Roll: canary trace sheets on a light table, graphite lettering,
+   non-photo-blue notes, one red pencil for whatever is current. */
+
+@theme inline {
+  --font-hand: var(--font-hand-face), cursive;
+  --font-mono: var(--font-mono-face), ui-monospace, monospace;
+  --font-sans: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
+
+  --color-graphite: #34332f;
+  --color-graphite-soft: #4d4b44;
+  /* Darker than real non-photo blue so notes pass 4.5:1 on canary */
+  --color-pencil-blue: #2a559c;
+  --color-pencil-red: #c13a27;
+  --color-lighttable: #eef3f4;
+  --color-label: #fdfdfa;
+}
+
+/* ---------- Browser surfaces ---------- */
+
+html {
+  background: var(--color-lighttable);
+  color-scheme: light;
+  scrollbar-color: #8c8973 transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-graphite);
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgb(42 85 156 / 0.22);
+  color: var(--color-graphite);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pencil-red);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+a {
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+.tex-trace {
+  background-image: url("/textures/trace.jpg");
+  background-size: 640px 640px;
+}
+
+/* ---------- The desk: light table + stacked trace ---------- */
+
+.trace-desk {
+  position: relative;
+  margin-inline: auto;
+  max-width: 1680px;
+  min-height: 100dvh;
+}
+
+.trace-stack {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.trace-sheet {
+  position: absolute;
+  background-image: url("/textures/trace.jpg");
+  background-size: 640px 640px;
+  /* the sheet edge reads as a denser line where light passes it */
+  box-shadow:
+    inset 0 0 0 1px rgb(150 132 30 / 0.22),
+    0 1px 2px rgb(80 72 20 / 0.08);
+}
+
+.trace-sheet[data-layer="1"] {
+  inset: 0.9rem 0.15rem 0.3rem 0.5rem;
+  rotate: 0.6deg;
+  opacity: 0.26;
+}
+.trace-sheet[data-layer="2"] {
+  inset: 0.35rem 0.6rem 0.8rem 0.2rem;
+  rotate: -0.45deg;
+  opacity: 0.3;
+}
+.trace-sheet[data-layer="3"] {
+  inset: 0.6rem 0.4rem 0.5rem 0.35rem;
+  opacity: 0.42;
+}
+
+@media (min-width: 1024px) {
+  .trace-sheet[data-layer="1"] {
+    inset: 2.25rem 0.25rem 0.25rem 4.5rem;
+    rotate: 0.8deg;
+  }
+  .trace-sheet[data-layer="2"] {
+    inset: 0.5rem 2.5rem 1.75rem 6.25rem;
+    rotate: -0.55deg;
+  }
+  .trace-sheet[data-layer="3"] {
+    inset: 1.25rem 1.25rem 1rem 5.25rem;
+  }
+}
+
+.trace-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 1.75rem 1.25rem 2.5rem;
+}
+
+.trace-aside {
+  margin-top: 1.5rem;
+  min-width: 0;
+}
+
+.trace-main {
+  min-width: 0;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .trace-layout {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trace-layout {
+    grid-template-columns: 9.75rem minmax(0, 1fr);
+    padding: 2.75rem 3.5rem 3rem 0;
+  }
+  .trace-head {
+    grid-column: 2;
+  }
+  .trace-aside {
+    grid-column: 1;
+    grid-row: 2;
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    margin-top: 1.75rem;
+  }
+  .trace-main {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 2.25rem;
+  }
+}
+
+/* ---------- Index tabs (filters) ---------- */
+
+.trace-tabs {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  margin-inline: -1.25rem;
+  padding: 0.375rem 1.25rem 0.625rem;
+  scrollbar-width: none;
+}
+.trace-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.trace-tab {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem 0.625rem;
+  font-family: var(--font-hand);
+  font-size: 1.0625rem;
+  line-height: 1.15;
+  text-align: left;
+  color: var(--color-graphite);
+  cursor: pointer;
+  rotate: calc(var(--tilt) * 0.4);
+  transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trace-tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/textures/trace.jpg");
+  background-size: 640px 640px;
+  opacity: 0.5;
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgb(150 132 30 / 0.3),
+    0 1px 2px rgb(80 72 20 / 0.12);
+  transition: opacity 0.3s;
+}
+
+.trace-tab[aria-pressed="true"]::before {
+  opacity: 0.9;
+}
+
+.trace-tab:hover::before {
+  opacity: 0.75;
+}
+
+.trace-tab-count {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--color-graphite-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 1024px) {
+  .trace-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow: visible;
+    margin: 0;
+    padding: 0 0 0 0.75rem;
+  }
+  .trace-tab {
+    width: 9rem;
+    min-height: 3.75rem;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.75rem 0.75rem 0.625rem 1rem;
+    font-size: 1.2rem;
+    rotate: var(--tilt);
+    translate: -0.5rem 0;
+  }
+  .trace-tab:hover,
+  .trace-tab[aria-pressed="true"] {
+    translate: 0 0;
+  }
+}
+
+/* ---------- Pencil marks ---------- */
+
+.pencil-draw path {
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.pencil-draw[data-on="true"] path {
+  stroke-dashoffset: 0;
+}
+
+.pencil-ellipse {
+  position: absolute;
+  left: -0.75em;
+  top: -0.6em;
+  width: calc(100% + 1.5em);
+  height: calc(100% + 1.2em);
+  overflow: visible;
+  pointer-events: none;
+  color: var(--color-pencil-red);
+}
+
+.pencil-underline {
+  position: absolute;
+  left: -0.15em;
+  top: 100%;
+  width: calc(100% + 0.4em);
+  height: 0.5em;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* ---------- Sticker field ---------- */
+
+.trace-field {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  gap: 2.25rem 0.75rem;
+}
+
+.trace-cell {
+  position: relative;
+  min-width: 0;
+}
+
+.trace-cell.is-big {
+  grid-column: span 2;
+}
+
+@media (min-width: 768px) {
+  .trace-field {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+  .trace-cell.is-big {
+    grid-column: 1 / span 2;
+    grid-row: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .trace-field {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem 2rem;
+    margin-top: -1.75rem;
+  }
+  .trace-field > .trace-cell {
+    padding-top: 3.75rem;
+  }
+  .trace-field > .trace-cell.is-big {
+    grid-column: 2 / span 2;
+    grid-row: 1 / span 2;
+    padding-top: 4.5rem;
+  }
+}
+
+.trace-sunk {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem 0.75rem;
+}
+@media (min-width: 768px) {
+  .trace-sunk {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .trace-sunk {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.75rem 1.5rem;
+  }
+}
+
+.trace-sunk .sticker {
+  filter: saturate(0.3) contrast(0.85);
+}
+
+/* One more sheet of trace laid over whatever the filter leaves behind */
+.trace-overlay {
+  position: absolute;
+  inset: -1.25rem -0.5rem -1rem;
+  z-index: 2;
+  rotate: -0.5deg;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgb(150 132 30 / 0.3),
+    0 1px 2px rgb(80 72 20 / 0.1);
+}
+@media (min-width: 1024px) {
+  .trace-overlay {
+    inset: -1.5rem -1.75rem -1.25rem;
+  }
+}
+
+.sticker {
+  --r: var(--rot-sm);
+  --x: 0%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(var(--x), var(--y, 0px)) rotate(var(--r));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (min-width: 1024px) {
+  .sticker {
+    --r: var(--rot-lg);
+    --x: var(--dx);
+    --y: var(--dy);
+  }
+}
+
+.sticker-link {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 6px;
+}
+
+.sticker-img {
+  height: auto;
+  max-width: 100%;
+  filter: drop-shadow(0 1px 1px rgb(70 62 20 / 0.2)) drop-shadow(0 3px 6px rgb(70 62 20 / 0.1));
+  transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trace-field .sticker:has(.sticker-link:hover, .sticker-link:focus-visible) {
+  transform: translate(var(--x), calc(var(--y, 0px) - 6px)) rotate(var(--r));
+}
+.trace-field .sticker-link:hover .sticker-img,
+.trace-field .sticker-link:focus-visible .sticker-img {
+  filter: drop-shadow(0 2px 2px rgb(70 62 20 / 0.16)) drop-shadow(0 16px 18px rgb(70 62 20 / 0.2));
+}
+
+.sticker-label {
+  position: relative;
+  margin-top: -0.6rem;
+  max-width: 100%;
+  padding: 0.125rem 0.625rem 0.25rem;
+  background: var(--color-label);
+  box-shadow: 0 1px 1.5px rgb(70 62 20 / 0.18);
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  line-height: 1.25;
+  text-align: center;
+  text-wrap: balance;
+}
+@media (min-width: 1024px) {
+  .sticker-label {
+    font-size: 1.125rem;
+  }
+}
+.is-big .sticker-label {
+  font-size: 1.375rem;
+  padding: 0.25rem 1rem 0.375rem;
+}
+@media (min-width: 1024px) {
+  .is-big .sticker-label {
+    font-size: 1.875rem;
+    margin-top: -1.25rem;
+  }
+}
+
+.sticker-label-rule {
+  display: block;
+  height: 1px;
+  margin-top: 0.125rem;
+  background: rgb(52 51 47 / 0.55);
+}
+
+/* Blue pencil annotation: under the sticker on small screens,
+   pulled out on a leader line on large ones */
+.sticker-note {
+  margin-top: 0.5rem;
+  max-width: 100%;
+  padding-inline: 0.25rem;
+  font-family: var(--font-hand);
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--color-pencil-blue);
+}
+.sticker-note .note-meta,
+.sticker-note .leader {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .trace-field .sticker-note {
+    position: absolute;
+    left: 32%;
+    bottom: calc(100% + 0.25rem);
+    width: max-content;
+    max-width: min(16rem, 88%);
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-size: 1.0625rem;
+    line-height: 1.2;
+  }
+  .trace-field .sticker-note .note-meta {
+    display: block;
+  }
+  .trace-field .sticker-note .leader {
+    display: block;
+    position: absolute;
+    right: calc(100% + 0.125rem);
+    top: 0.45rem;
+    width: 1.5rem;
+    height: 5.5rem;
+    overflow: visible;
+  }
+  .trace-field .is-big .sticker-note {
+    left: 44%;
+    max-width: 17rem;
+    font-size: 1.1875rem;
+  }
+}
+
+.trace-sunk .sticker-note {
+  font-size: 0.875rem;
+}
+.trace-sunk .sticker-label {
+  font-size: 0.9375rem;
+}
+
+/* ---------- Index (schedule) view ---------- */
+
+.schedule th,
+.schedule td {
+  padding: 0.75rem 0.75rem 0.75rem 0;
+  border-bottom: 1px solid rgb(52 51 47 / 0.32);
+  text-align: left;
+  vertical-align: baseline;
+}
+.schedule thead th {
+  border-bottom: 1.5px solid rgb(52 51 47 / 0.75);
+  padding-block: 0.5rem;
+  font-weight: 400;
+}
+.schedule td:last-child,
+.schedule th:last-child {
+  padding-right: 0;
+}
+
+/* ---------- Detail page ---------- */
+
+.tape {
+  position: absolute;
+  width: 5.5rem;
+  height: 1.375rem;
+  background: rgb(238 230 204 / 0.82);
+  box-shadow: 0 1px 1px rgb(70 62 20 / 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sticker,
+  .sticker-img,
+  .trace-tab,
+  .trace-tab::before,
+  .pencil-draw path {
+    transition: none;
+  }
+}

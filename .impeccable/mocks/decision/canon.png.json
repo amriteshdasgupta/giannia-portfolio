@@ -1,0 +1,5 @@
+{
+ "tool": "openai/gpt-image-2 via harness image tool",
+ "surface": "home page, desktop 16:9",
+ "prompt": "A desktop website home page, rendered edge to edge at 16:9 with crisp readable text, no browser window or device. It is the portfolio of Giannia, an architecture student, as architecture student portfolios usually ship, executed with real care.\n\nWhite page, black type in a refined grotesque. Top bar: \"Giannia\" at left, \"Work\", \"About\", \"Contact\" at right. A one-line intro: \"Architecture student. Selected work 2022\u20132026.\" A filter row of small text links: All, Studio projects, Models, Sketches, Writing, Competitions.\n\nWhat leads: a clean three-column grid of project images with generous white space: a perspective render of a bathhouse, a white chipboard model photo, a floor plan, a pencil site sketch, a section drawing, the first page of an essay. Under each, a caption: \"Bathhouse on the Canal \u2014 Studio III, 2025\", \"Threshold Library \u2014 Studio II, 2024\", \"On Thresholds \u2014 Essay, 2024\", \"Pavilion for Rain \u2014 Competition, 2023\". Small grey footer line: \"placeholder works\"."
+}

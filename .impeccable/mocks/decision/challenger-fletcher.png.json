@@ -1,0 +1,6 @@
+{
+ "tool": "openai/gpt-image-2 via harness image tool",
+ "surface": "home page, desktop 16:9",
+ "prompt": "A desktop website home page, rendered edge to edge at 16:9 with crisp readable text, no browser window or device. The references are style inspiration adapted into a real working portfolio; do not copy their layout or content.\n\nIt is the portfolio of Giannia, an architecture student. Architecture firms and admissions committees come to scan her works and open one.\n\nWhat leads: a catalog of her works as cut-paper stickers on the sheet, each sticker cut in the silhouette of its project (a bathhouse roofline, an arched library window, a stair, a pavilion umbrella roof, a folded page for an essay) and holding a small crisp drawing or model photo inside. Each sticker has a small typeset caption: \"Bathhouse on the Canal \u00b7 Studio III \u00b7 2025\", \"Threshold Library \u00b7 Studio II \u00b7 2024\", \"On Thresholds \u00b7 essay \u00b7 2024\", \"Pavilion for Rain \u00b7 competition \u00b7 2023\". A crayon ring is scrawled around the one being hovered.\n\nFrame: top left \"Giannia\" in marker lettering with \"works & words\" small beneath; a row of cut-paper filter chips: All, Studio projects, Models, Sketches, Writing, Competitions; top right \"About\" and \"Contact\"; small credit line at the bottom: \"placeholder works\".",
+ "approved": true
+}
