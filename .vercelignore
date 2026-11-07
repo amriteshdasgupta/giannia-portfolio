@@ -1,0 +1,5 @@
+# Source scans and design-process records: not needed to build the site
+assets/
+.impeccable/
+.openchamber/
+scripts/
