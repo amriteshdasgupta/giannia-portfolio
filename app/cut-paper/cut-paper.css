@@ -1,18 +1,15 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-marker: var(--font-caveat-brush);
-  --font-sans: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+  --font-marker: var(--font-mansalva);
+  --font-sans: var(--font-familjen), ui-sans-serif, system-ui, sans-serif;
 
-  --color-paper: #f6ecdc;
-  --color-sheet: #fdf9f0;
+  --color-paper: #f7efe2;
   --color-ink: #1c1b19;
   --color-ink-soft: #5e564b;
-  --color-rule: #1c1b1924;
-  --color-cobalt: #1f4fbf;
-  --color-leaf: #2f8a3b;
-  --color-poppy: #db3b27;
-  --color-ochre: #e4a72a;
+  --color-rule: #1c1b1926;
+  --color-cobalt: #1a3bd1;
+  --color-poppy: #e3261b;
 }
 
 /* ---------- ground ---------- */
@@ -25,7 +22,7 @@ html {
     url("/textures/paper-stock.jpg");
   background-size: auto, 640px 640px;
   color: var(--color-ink);
-  scrollbar-color: #c9b896 transparent;
+  scrollbar-color: #b9a98c transparent;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -33,7 +30,7 @@ body {
   overflow-x: clip;
   font-family: var(--font-sans);
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.55;
   caret-color: var(--color-cobalt);
   -webkit-font-smoothing: antialiased;
 }
@@ -43,182 +40,203 @@ body {
   color: #fff;
 }
 
-/* hand-drawn focus: an uneven crayon loop, never the browser default */
-:where(a, button, [tabindex]):focus-visible {
-  outline: 2.5px solid var(--color-poppy);
-  outline-offset: 5px;
-  border-radius: 255px 18px 225px 18px / 18px 225px 18px 255px;
+:where(a, button):focus-visible {
+  outline: 2px solid var(--color-cobalt);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-/* ---------- crayon ---------- */
+/* ---------- marks ---------- */
 
-.cp-crayon {
-  filter: url(#cp-crayon);
-  overflow: visible;
+.cp-mark {
+  display: block;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
 }
 
-/* ---------- torn paper chips and tabs ---------- */
-
-.cp-torn {
-  filter: url(#cp-torn);
-}
-
-/* ---------- stickers ---------- */
+/* ---------- the sheet of stickers ---------- */
 
 .cp-sheet {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 3.25rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
+  gap: 3rem 1.5rem;
 }
 
 .cp-cell {
   --rk: 0.5;
-  --maxh-xl: 420px;
-  --maxh-l: 380px;
-  --maxh-m: 350px;
-  --maxh-s: 320px;
-  --maxh-g: 150px;
+  --maxh-xl: 400px;
+  --maxh-l: 360px;
+  --maxh-m: 330px;
+  --maxh-s: 300px;
+  --maxh-g: 110px;
   --wpct: var(--wpct-sm, 100%);
-  grid-column: span 2;
-  display: flex;
-  justify-content: var(--justify-sm, center);
+  width: min(var(--wpct), calc(var(--maxh) * var(--ar)));
+  margin-inline: var(--mi-sm, 0);
   min-width: 0;
 }
 
-.cp-cell[data-ghost="true"] {
-  grid-column: span 1;
-  justify-content: center;
+/* a zero-height row break, so set-aside stickers gather on their own rows */
+.cp-break {
+  flex-basis: 100%;
+  height: 0;
 }
 
-@media (min-width: 768px) {
-  .cp-sheet {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 4.5rem 2rem;
+@media (min-width: 640px) {
+  .cp-cell {
+    --rk: 0.8;
+    --wpct: 46%;
+    --maxh-xl: 340px;
+    --maxh-l: 280px;
+    --maxh-m: 250px;
+    --maxh-s: 220px;
+    --maxh-g: 120px;
+    margin-inline: 0;
   }
 
+  .cp-sheet {
+    gap: 3.5rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
   .cp-cell {
     --rk: 1;
-    --maxh-xl: 310px;
-    --maxh-l: 270px;
-    --maxh-m: 240px;
-    --maxh-s: 210px;
-    --maxh-g: 150px;
-    --wpct: 100%;
-    grid-column: var(--start, auto) / span var(--span);
-    justify-content: center;
+    --wpct: 40%;
+    --maxh-xl: 360px;
+    --maxh-l: 300px;
+    --maxh-m: 265px;
+    --maxh-s: 235px;
+    --maxh-g: 130px;
   }
 
-  .cp-cell[data-ghost="true"] {
-    grid-column: span 2;
+  .cp-sheet {
+    gap: 4rem 4rem;
   }
 }
 
 @media (min-width: 1280px) {
   .cp-cell {
-    --maxh-xl: 370px;
+    --maxh-xl: 390px;
     --maxh-l: 320px;
     --maxh-m: 285px;
-    --maxh-s: 245px;
+    --maxh-s: 250px;
   }
+}
+
+.cp-cell[data-ghost="true"] {
+  --rk: 0.6;
+  width: min(30%, calc(var(--maxh-g) * var(--ar)));
+  margin-inline: 0;
 }
 
 .cp-sticker {
   position: relative;
   display: block;
-  width: min(var(--wpct, 100%), calc(var(--maxh) * var(--ar)));
   color: inherit;
   text-decoration: none;
   outline: none;
 }
 
+/* the sticker lying on the sheet; hover / focus nudges it and lifts it */
 .cp-tilt {
   position: relative;
   rotate: calc(var(--r) * var(--rk) * 1deg);
   translate: var(--dx) var(--dy);
-  filter: drop-shadow(0 0 0 rgb(74 50 24 / 0));
   transition:
-    rotate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    scale 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: filter;
+    rotate 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .cp-sticker:hover .cp-tilt,
 .cp-sticker:focus-visible .cp-tilt {
   rotate: calc(var(--r2) * var(--rk) * 1deg);
-  translate: var(--dx) calc(var(--dy) - 8px);
-  scale: 1.025;
-  filter: drop-shadow(0 16px 14px rgb(74 50 24 / 0.16));
+  translate: var(--dx) calc(var(--dy) - 6px);
 }
 
-/* The deckle backing is grown from the sticker's own silhouette by #cp-deckle;
-   the drawing itself is composited on top untouched. */
-.cp-deckle {
-  position: relative;
-  margin: 0;
-  filter: url(#cp-deckle);
-  will-change: transform;
-}
-
-.cp-deckle img {
+.cp-cutout {
   display: block;
   width: 100%;
   height: auto;
+  filter: drop-shadow(1px 5px 6px rgb(74 50 24 / 0.2));
+  transition: filter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
   -webkit-user-drag: none;
 }
 
+.cp-sticker:hover .cp-cutout,
+.cp-sticker:focus-visible .cp-cutout {
+  filter: drop-shadow(2px 14px 12px rgb(74 50 24 / 0.2));
+}
+
+/* typeset label on a torn paper strip, centred under the drawing */
 .cp-label {
   position: relative;
-  /* the label may run a little wider than a narrow drawing, centred under it */
   width: max-content;
-  max-width: max(100%, min(19rem, 84vw));
-  margin: -0.35rem 0 0 50%;
+  max-width: max(100%, min(18rem, 84vw));
+  margin: -0.25rem 0 0 50%;
   translate: -50% 0;
-  padding: 0.45rem 0.9rem 0.55rem;
-  background: var(--color-sheet);
+  padding: 0.5rem 1.1rem 0.55rem;
+  background: var(--chip) no-repeat center / 100% 100%;
   text-align: center;
-  text-wrap: balance;
 }
 
-/* red crayon ring + sparks, scrawled in on hover / keyboard focus */
+/* ---------- the crayon ring: drawn round like a hand, by a sweeping mask ---------- */
+
+@property --sweep {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 .cp-ring {
   position: absolute;
-  /* an svg is a replaced element: it needs a box, insets alone won't stretch it */
-  /* an ellipse must be ~1.3x its rectangle to clear the corners */
-  top: -16%;
-  left: -19%;
-  width: 138%;
-  height: 134%;
-  pointer-events: none;
+  top: -15%;
+  left: -17%;
+  width: 134%;
+  height: 132%;
   opacity: 0;
-  transition: opacity 0.2s ease-out;
-}
-
-.cp-ring path {
-  stroke-dasharray: 1 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0s linear 0.2s;
+  -webkit-mask-image: conic-gradient(from 60deg, #000 var(--sweep), transparent var(--sweep));
+  mask-image: conic-gradient(from 60deg, #000 var(--sweep), transparent var(--sweep));
+  transition:
+    opacity 0.2s ease-out,
+    --sweep 0s linear 0.2s;
 }
 
 .cp-sticker:hover .cp-ring,
 .cp-sticker:focus-visible .cp-ring {
   opacity: 1;
-  transition: opacity 0.08s ease-out;
+  --sweep: 360deg;
+  transition:
+    opacity 0.05s linear,
+    --sweep 0.55s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-.cp-sticker:hover .cp-ring path,
-.cp-sticker:focus-visible .cp-ring path {
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+.cp-ring-sparks {
+  position: absolute;
+  top: -19%;
+  right: -21%;
+  width: clamp(28px, 16%, 52px);
+  aspect-ratio: 437 / 485;
+  /* mirrored, so the ticks fan out from the ring's top-right */
+  scale: -0.6 0.6;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease-out,
+    scale 0s linear 0.2s;
 }
 
-.cp-sticker:hover .cp-ring .cp-spark,
-.cp-sticker:focus-visible .cp-ring .cp-spark {
-  transition-duration: 0.18s;
-  transition-delay: calc(0.42s + var(--i) * 0.07s);
+.cp-sticker:hover .cp-ring-sparks,
+.cp-sticker:focus-visible .cp-ring-sparks {
+  opacity: 1;
+  scale: -1 1;
+  transition:
+    opacity 0.12s linear 0.4s,
+    scale 0.3s cubic-bezier(0.22, 1, 0.36, 1) 0.4s;
 }
 
 /* ---------- filter chips: a sideways strip on phones ---------- */
@@ -232,18 +250,19 @@ body {
   display: none;
 }
 
-/* ---------- reduced motion ---------- */
+/* ---------- reduced motion: same states, no travel ---------- */
 
 @media (prefers-reduced-motion: reduce) {
   .cp-tilt,
+  .cp-cutout,
   .cp-ring,
-  .cp-ring path {
+  .cp-ring-sparks {
     transition: none !important;
   }
 
   .cp-sticker:hover .cp-tilt,
   .cp-sticker:focus-visible .cp-tilt {
+    rotate: calc(var(--r) * var(--rk) * 1deg);
     translate: var(--dx) var(--dy);
-    scale: 1;
   }
 }

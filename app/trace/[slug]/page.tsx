@@ -32,8 +32,7 @@ export default async function WorkPage({ params }: Props) {
   const img = imageOf(w)
   const size = imageSize(img)
 
-  const rows = [
-    { label: "No.", value: pad(w.no) },
+  const facts = [
     { label: "Kind", value: kindLabel(w.kind) },
     { label: "Year", value: w.year },
     { label: "Context", value: w.context, wide: true },
@@ -47,30 +46,23 @@ export default async function WorkPage({ params }: Props) {
       header={<Masthead current="detail" />}
       aside={
         <LinkTab href="/trace">
-          <span className="inline-flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-2">
             <PencilArrow />
-            all works
+            All works
           </span>
         </LinkTab>
       }
-      footer={
-        <TitleStamp>
-          Sheet {pad(w.no)} of {pad(works.length)} · placeholder work
-        </TitleStamp>
-      }
+      footer={<TitleStamp cells={["Giannia — portfolio", `No. ${pad(w.no)}`, "Placeholder work"]} />}
     >
-      <article className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
-        <header className="min-w-0 lg:col-start-2 lg:row-start-1">
-          <h1 className="font-hand text-[clamp(2.25rem,4.2vw,3.5rem)] leading-[1.05] tracking-[-0.01em] text-balance">
-            {w.title}
-          </h1>
-          <p className="mt-5 max-w-[60ch] text-[1.1875rem] leading-[1.55] text-graphite text-pretty">{w.summary}</p>
-        </header>
+      <article className="grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr]">
+        <h1 className="font-tech text-[clamp(2.25rem,4vw,3.5rem)] leading-[1.05] text-balance lg:col-start-2 lg:row-start-1">
+          {w.title}
+        </h1>
 
         <figure className="lg:sticky lg:top-10 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start">
-          <div className="relative mx-auto max-w-[min(44rem,78vh)] pt-16 lg:pt-20">
-            <p className="absolute top-0 right-2 max-w-[15rem] font-hand text-[1.0625rem] leading-tight text-pencil-blue lg:right-6 lg:text-[1.1875rem]">
-              <LeaderLine className="absolute top-2 right-[calc(100%+0.25rem)] h-[6rem] w-12 overflow-visible" />
+          <div className="relative mx-auto max-w-[min(42rem,74vh)] pt-16">
+            <p className="absolute top-0 right-2 z-10 font-pen text-[1.625rem] leading-none text-pencil-blue lg:right-8 lg:text-[1.75rem]">
+              <LeaderLine className="absolute top-3 right-[calc(100%+0.25rem)] h-[5.25rem] w-11 overflow-visible" />
               {w.note}
             </p>
             <div className="relative -rotate-[0.6deg] bg-white p-2.5 shadow-[0_1px_2px_rgb(70_62_20/0.18),0_10px_24px_-12px_rgb(70_62_20/0.3)] sm:p-3">
@@ -88,30 +80,20 @@ export default async function WorkPage({ params }: Props) {
               />
             </div>
           </div>
-          <figcaption className="mx-auto mt-4 max-w-[min(44rem,78vh)] font-mono text-[0.8125rem] text-graphite-soft">
-            Fig. {pad(w.no)} · {w.medium}
-          </figcaption>
         </figure>
 
         <div className="min-w-0 lg:col-start-2 lg:row-start-2">
-          <TitleBlock rows={rows} className="max-w-xl" />
+          <TitleBlock rows={facts} className="max-w-xl" />
+          <p className="mt-10 max-w-[60ch] text-[1.1875rem] leading-[1.55] text-pretty">{w.summary}</p>
 
-          <ol className="mt-14 space-y-10">
-            {w.sections.map((s, i) => (
-              <li key={s.heading} className="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-4">
-                <span
-                  aria-hidden
-                  className="mt-1 grid size-8 place-items-center rounded-full border-[1.5px] border-graphite font-mono text-[0.75rem] [font-variant-numeric:tabular-nums]"
-                >
-                  {i + 1}
-                </span>
-                <div>
-                  <h2 className="font-hand text-[1.5rem] leading-tight lg:text-[1.75rem]">{s.heading}</h2>
-                  <p className="mt-2 max-w-[62ch] text-[1.0625rem] leading-[1.65] text-graphite text-pretty">{s.body}</p>
-                </div>
-              </li>
+          <div className="mt-12 space-y-9">
+            {w.sections.map((s) => (
+              <section key={s.heading}>
+                <h2 className="caps text-[0.8125rem] text-graphite-soft">{s.heading}</h2>
+                <p className="mt-2 max-w-[62ch] text-[1.0625rem] leading-[1.65] text-pretty">{s.body}</p>
+              </section>
             ))}
-          </ol>
+          </div>
         </div>
       </article>
 
@@ -120,24 +102,21 @@ export default async function WorkPage({ params }: Props) {
         className="mt-20 grid gap-6 border-t border-graphite/35 pt-8 sm:grid-cols-[1fr_auto_1fr] sm:items-end"
       >
         <Link href={`/trace/${prev.slug}`} className="group no-underline">
-          <span className="flex items-center gap-2 font-mono text-[0.75rem] uppercase tracking-[0.06em] text-graphite-soft">
+          <span className="caps flex items-center gap-2 text-[0.6875rem] text-graphite-soft">
             <PencilArrow /> Previous
           </span>
-          <span className="mt-1 block font-hand text-[1.375rem] decoration-pencil-red decoration-[1.5px] group-hover:underline">
+          <span className="mt-1.5 block font-tech text-[1.25rem] decoration-pencil-red decoration-[1.5px] group-hover:underline">
             {prev.title}
           </span>
         </Link>
-        <Link
-          href="/trace"
-          className="font-hand text-[1.25rem] decoration-1 underline underline-offset-[0.22em] sm:text-center"
-        >
-          all works
+        <Link href="/trace" className="caps text-[0.8125rem] underline decoration-graphite/50 hover:decoration-pencil-red sm:text-center">
+          All works
         </Link>
         <Link href={`/trace/${next.slug}`} className="group no-underline sm:text-right">
-          <span className="flex items-center gap-2 font-mono text-[0.75rem] uppercase tracking-[0.06em] text-graphite-soft sm:justify-end">
+          <span className="caps flex items-center gap-2 text-[0.6875rem] text-graphite-soft sm:justify-end">
             Next <PencilArrow dir="right" />
           </span>
-          <span className="mt-1 block font-hand text-[1.375rem] decoration-pencil-red decoration-[1.5px] group-hover:underline">
+          <span className="mt-1.5 block font-tech text-[1.25rem] decoration-pencil-red decoration-[1.5px] group-hover:underline">
             {next.title}
           </span>
         </Link>

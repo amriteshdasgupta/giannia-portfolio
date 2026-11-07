@@ -32,16 +32,20 @@ export function TraceShell({
   )
 }
 
-/** The small drafted stamp in the sheet's bottom-right corner. */
-export function TitleStamp({ children }: { children: ReactNode }) {
+/** The drafted title block in the sheet's bottom-right corner. */
+export function TitleStamp({ cells }: { cells: string[] }) {
   return (
-    <p className="w-fit border-[1.5px] border-graphite px-3 py-1.5 font-mono text-[0.8125rem] tracking-[0.01em] text-graphite [font-variant-numeric:tabular-nums]">
-      {children}
+    <p className="caps flex w-fit flex-wrap border-[1.5px] border-graphite text-[0.75rem] leading-none text-graphite">
+      {cells.map((c, i) => (
+        <span key={c} className={`px-3 py-2 ${i > 0 ? "border-l border-graphite/60" : ""}`}>
+          {c}
+        </span>
+      ))}
     </p>
   )
 }
 
-/** Drafted title block: a ruled box of label/value cells in mono. */
+/** Label / value facts, ruled like a drawing's title block. */
 export function TitleBlock({
   rows,
   className = "",
@@ -50,16 +54,14 @@ export function TitleBlock({
   className?: string
 }) {
   return (
-    <dl
-      className={`grid grid-cols-2 overflow-hidden border-[1.5px] border-graphite font-mono text-[0.875rem] [font-variant-numeric:tabular-nums] sm:grid-cols-3 ${className}`}
-    >
+    <dl className={`grid grid-cols-2 overflow-hidden border-[1.5px] border-graphite ${className}`}>
       {rows.map((r) => (
         <div
           key={r.label}
-          className={`-mb-px -mr-px border-b border-r border-graphite/45 px-3 py-2 ${r.wide ? "col-span-2 sm:col-span-3" : ""}`}
+          className={`-mb-px -mr-px border-b border-r border-graphite/45 px-3 pt-2 pb-2.5 ${r.wide ? "col-span-2" : ""}`}
         >
-          <dt className="text-[0.6875rem] uppercase tracking-[0.06em] text-graphite-soft">{r.label}</dt>
-          <dd className="mt-0.5 text-graphite">{r.value}</dd>
+          <dt className="caps text-[0.6875rem] text-graphite-soft">{r.label}</dt>
+          <dd className="mt-1 font-tech text-[1rem] leading-snug text-graphite">{r.value}</dd>
         </div>
       ))}
     </dl>

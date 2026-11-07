@@ -51,35 +51,25 @@ export function TraceHome({
           />
         }
         aside={<FilterTabs value={kind} onChange={choose} />}
-        footer={<TitleStamp>Sheet 01 of 01 · placeholder works</TitleStamp>}
+        footer={<TitleStamp cells={["Giannia — portfolio", "Sheet 01", "Placeholder works"]} />}
       >
         <p className="sr-only" aria-live="polite">
           {label ? `${label}: ${shown.length} of ${works.length} works` : `All ${works.length} works`}
         </p>
         {view === "index" ? (
-          <Schedule rows={shown} onShowSheet={() => showView("sheet")} />
+          <Schedule rows={shown} />
         ) : (
-          <StickerField shown={shown} under={under} sizes={sizes} onShowAll={() => choose("all")} />
+          <StickerField shown={shown} under={under} sizes={sizes} />
         )}
       </TraceShell>
     </MotionConfig>
   )
 }
 
-function StickerField({
-  shown,
-  under,
-  sizes,
-  onShowAll,
-}: {
-  shown: Work[]
-  under: Work[]
-  sizes: Record<string, Size>
-  onShowAll: () => void
-}) {
-  const [hovered, setHovered] = useState<string | null>(null)
+function StickerField({ shown, under, sizes }: { shown: Work[]; under: Work[]; sizes: Record<string, Size> }) {
+  const [pointed, setPointed] = useState<string | null>(null)
   // The red loop belongs to whatever you point at, else the featured work
-  const current = hovered ?? shown.find((w) => w.featured)?.slug ?? null
+  const looped = pointed ?? shown.find((w) => w.featured)?.slug ?? null
 
   return (
     <LayoutGroup>
@@ -90,38 +80,27 @@ function StickerField({
             work={w}
             size={sizes[w.slug]!}
             big={!!w.featured}
-            hot={current === w.slug}
-            onHot={setHovered}
-            priority={i < 5}
+            looped={looped === w.slug}
+            pointed={pointed === w.slug}
+            onPoint={setPointed}
+            eager={i < 5}
           />
         ))}
       </ul>
 
       {under.length > 0 ? (
-        <div className="relative mt-14 lg:mt-24">
-          <p className="relative z-10 font-hand text-[1.0625rem] text-pencil-blue lg:text-[1.1875rem]">
-            {under.length} more under the next sheet ·{" "}
-            <button
-              type="button"
-              onClick={onShowAll}
-              className="cursor-pointer underline decoration-1 underline-offset-[0.22em] hover:decoration-2"
-            >
-              lift them all back
-            </button>
-          </p>
-          <div aria-hidden inert className="relative mt-8">
-            <ul className="trace-sunk">
-              {under.map((w) => (
-                <Sticker key={w.slug} work={w} size={sizes[w.slug]!} sunk />
-              ))}
-            </ul>
-            <motion.div
-              className="trace-overlay tex-trace"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 0.6, y: 0 }}
-              transition={SINK}
-            />
-          </div>
+        <div aria-hidden inert className="relative mt-20 lg:mt-28">
+          <ul className="trace-sunk">
+            {under.map((w) => (
+              <Sticker key={w.slug} work={w} size={sizes[w.slug]!} sunk />
+            ))}
+          </ul>
+          <motion.div
+            className="trace-overlay tex-trace"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.62 }}
+            transition={SINK}
+          />
         </div>
       ) : null}
     </LayoutGroup>

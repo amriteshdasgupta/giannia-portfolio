@@ -6,33 +6,27 @@ type Style = React.CSSProperties
 
 /** The top transom: name pane, a strip of clear glass, one cobalt pane, About and Contact. */
 export function HeaderBay({ home = false }: { home?: boolean }) {
-  const name = (
-    <>
-      <span className="block">Giannia —</span>
-      <span className="block">works &amp; words</span>
-    </>
-  )
+  const name = [about.name, about.surname].filter(Boolean).join(" ")
   return (
     <header className="bay-head">
       {home ? (
         <div className="pane glass bay-head__name" style={grainOffset(1) as Style}>
-          <h1 className="display m-0">{name}</h1>
+          <h1 className="display name">{name}</h1>
+          <p className="role">{about.role}</p>
         </div>
       ) : (
-        <Link
-          href="/glazed"
-          className="pane glass lit bay-head__name"
-          style={grainOffset(1) as Style}
-          aria-label="Giannia, works and words: all works"
-        >
-          <span className="display relative z-[1]">{name}</span>
+        <Link href="/glazed" className="pane glass lit bay-head__name" style={grainOffset(1) as Style}>
+          <span className="display name">{name}</span>
+          <span className="role">{about.role}</span>
         </Link>
       )}
-      <p className="pane glass bay-head__strip m-0" style={grainOffset(2) as Style}>
-        {about.role}. Draws by hand, builds models, writes.
-      </p>
+      <div className="pane glass bay-head__strip" style={grainOffset(2) as Style} aria-hidden="true" />
       <div className="pane glass bay-head__strip bay-head__strip--extra" style={grainOffset(3) as Style} aria-hidden="true" />
-      <div className="pane glass bay-head__strip bay-head__strip--extra" style={grainOffset(4) as Style} aria-hidden="true" />
+      <div
+        className="pane glass bay-head__strip bay-head__strip--extra bay-head__strip--wide"
+        style={grainOffset(4) as Style}
+        aria-hidden="true"
+      />
       <div className="pane glass glass--cobalt" style={grainOffset(5) as Style} aria-hidden="true" />
       <nav aria-label="Giannia" className="contents">
         <Link href="/glazed/about" className="pane glass lit bay-head__link" style={grainOffset(6) as Style}>
@@ -47,11 +41,11 @@ export function HeaderBay({ home = false }: { home?: boolean }) {
 }
 
 /** The bottom rail: one long low pane and a cobalt light. */
-export function FootBay({ children }: { children?: React.ReactNode }) {
+export function FootBay({ children = "Placeholder works — real projects coming" }: { children?: React.ReactNode }) {
   return (
     <footer className="bay-foot">
       <p className="pane glass bay-foot__note" style={grainOffset(9) as Style}>
-        {children ?? "Placeholder works: titles, years and images stand in until the real list arrives."}
+        <span className="relative z-[1]">{children}</span>
       </p>
       <div className="pane glass glass--cobalt" style={grainOffset(10) as Style} aria-hidden="true" />
     </footer>

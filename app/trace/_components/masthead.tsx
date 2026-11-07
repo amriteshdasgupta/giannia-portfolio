@@ -5,7 +5,7 @@ import { GraphiteRule, PencilUnderline } from "./pencil"
 
 type Current = "sheet" | "index" | "about" | "detail"
 
-/** Name in hand lettering, top left; Index / About / Contact, top right. */
+/** Name top left; Index / About / Contact top right. */
 export function Masthead({
   current,
   indexHref = "/trace?view=index",
@@ -32,9 +32,9 @@ export function Masthead({
   ]
 
   return (
-    <header className="flex flex-wrap items-start justify-between gap-x-10 gap-y-5">
+    <header className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
       <div>
-        <Name className="font-hand text-[clamp(3rem,5.4vw,4.75rem)] leading-[0.95] tracking-[-0.01em]">
+        <Name className="font-tech text-[clamp(3rem,6vw,5.25rem)] leading-[0.9] tracking-[0.005em]">
           {onHome ? (
             about.name
           ) : (
@@ -43,13 +43,10 @@ export function Masthead({
             </Link>
           )}
         </Name>
-        <GraphiteRule className="-ml-1 w-[calc(100%+1.5rem)]" />
-        <p className="mt-2 font-hand text-[1.3rem] text-graphite-soft lg:text-[1.65rem]">
-          works &amp; words, {about.years}
-        </p>
+        <GraphiteRule className="-ml-1 mt-2 w-[calc(100%+2rem)]" />
       </div>
-      <nav aria-label="Main" className="lg:pt-3">
-        <ul className="flex gap-6 font-hand text-[1.25rem] sm:gap-8 lg:gap-12 lg:text-[1.65rem]">
+      <nav aria-label="Main" className="pb-3">
+        <ul className="caps flex gap-7 text-[1rem] sm:gap-10">
           {links.map((l) => (
             <li key={l.label}>
               {l.href.startsWith("mailto:") ? (
@@ -80,6 +77,6 @@ function NavRule({ on }: { on: boolean }) {
   return on ? (
     <PencilUnderline on />
   ) : (
-    <GraphiteRule className="absolute top-full left-0 w-full opacity-60 transition-opacity group-hover:opacity-100" />
+    <GraphiteRule className="absolute top-[calc(100%+0.2em)] left-0 w-full opacity-0 transition-opacity group-hover:opacity-100" />
   )
 }

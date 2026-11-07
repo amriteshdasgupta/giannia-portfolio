@@ -5,7 +5,6 @@ import { notFound } from "next/navigation"
 import { getWork, imageOf, kindLabel, kinds, neighbours, stickerOf, works, type Kind } from "@/lib/works"
 import { Arrow, FootBay, HeaderBay } from "../_components/bays"
 import { grainOffset, type Glass } from "../_components/elevation-map"
-import { pad } from "../_components/work-pane"
 
 type Style = React.CSSProperties
 type Props = { params: Promise<{ slug: string }> }
@@ -37,8 +36,9 @@ export default async function WorkPage({ params }: Props) {
   const kindPlural = kinds.find((k) => k.value === work.kind)!.label
 
   const facts: [string, string | undefined][] = [
-    ["Context", work.context],
+    ["Kind", kindLabel(work.kind)],
     ["Year", String(work.year)],
+    ["Context", work.context],
     ["Location", work.location],
     ["Medium", work.medium],
     ["Collaborators", work.collaborators],
@@ -51,13 +51,7 @@ export default async function WorkPage({ params }: Props) {
         <div className="bay detail-top">
           <figure className="pane glass detail-image m-0" style={grainOffset(11) as Style}>
             <div className="detail-image__frame">
-              <Image
-                src={imageOf(work)}
-                alt={`${work.title}: ${work.medium}`}
-                fill
-                preload
-                sizes="(max-width: 1099px) 92vw, 52vw"
-              />
+              <Image src={imageOf(work)} alt={work.title} fill preload sizes="(max-width: 1099px) 92vw, 52vw" />
             </div>
           </figure>
 
@@ -67,46 +61,41 @@ export default async function WorkPage({ params }: Props) {
               <span>All works</span>
             </Link>
 
-            <div className="pane glass pane-pad" style={grainOffset(13) as Style}>
-              <h1 className="display title-xl">
-                <span className="text-[var(--ink-soft)]">{pad(work.no)}</span> {work.title}
-              </h1>
+            <div className="pane glass pane-pad title-pane" style={grainOffset(13) as Style}>
+              <h1 className="display title-xl relative z-[1]">{work.title}</h1>
             </div>
 
-            <p className="pane glass pane-pad prose m-0" style={grainOffset(14) as Style}>
-              {work.summary}
-            </p>
-
-            <div className="pane glass pane-pad" style={grainOffset(15) as Style}>
-              <dl className="facts">
+            <div className="pane glass pane-pad" style={grainOffset(14) as Style}>
+              <dl className="kv">
                 {facts
                   .filter(([, v]) => v)
                   .map(([k, v]) => (
-                    <div key={k} className="contents">
-                      <dt>{k}</dt>
-                      <dd>{v}</dd>
-                    </div>
-                  ))}
+                  <div key={k} className="contents">
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
               </dl>
             </div>
+
+            <p className="pane glass pane-pad prose m-0" style={grainOffset(15) as Style}>
+              {work.summary}
+            </p>
 
             <figure className="pane glass pane-pad sticker-pane grow m-0" style={grainOffset(16) as Style}>
               <div className="sticker-pane__img">
                 <Image src={stickerOf(work)} alt="" fill sizes="(max-width: 1099px) 60vw, 22vw" />
               </div>
-              <figcaption className="mt-3 text-[0.9375rem]">
-                Written on the sticker: &ldquo;{work.note}&rdquo;
-              </figcaption>
+              <figcaption className="note">&ldquo;{work.note}&rdquo;</figcaption>
             </figure>
 
             <Link
               href={`/glazed?kind=${work.kind}`}
-              className={`pane glass glass--${kindGlass[work.kind]} lit link-pane pane-pad`}
+              className={`pane glass glass--${kindGlass[work.kind]} lit link-pane pane-pad kind-pane`}
               style={grainOffset(17) as Style}
             >
-              <span className="display text-[1.75rem]">{kindLabel(work.kind)}</span>
-              <span className="inline-flex items-center gap-2 text-[0.9375rem]">
-                All {kindPlural.toLowerCase()} on the wall <Arrow dir="right" />
+              <span className="display">
+                {kindPlural} <Arrow dir="right" />
               </span>
             </Link>
           </div>
@@ -115,20 +104,18 @@ export default async function WorkPage({ params }: Props) {
         <div className="bay sections">
           {work.sections.map((s, i) => (
             <section key={s.heading} className="pane glass pane-pad" style={grainOffset(18 + i) as Style}>
-              <h2>{s.heading}</h2>
+              <h2 className="display">{s.heading}</h2>
               <p className="prose">{s.body}</p>
             </section>
           ))}
         </div>
 
-        <nav className="bay detail-nav" aria-label="More works">
+        <nav className="bay detail-nav" aria-label="Previous and next work">
           <Link href={`/glazed/${prev.slug}`} className="pane glass lit link-pane pane-pad" style={grainOffset(24) as Style}>
-            <span className="inline-flex items-center gap-2 text-[0.875rem] text-[var(--ink-soft)]">
+            <span className="detail-nav__dir">
               <Arrow dir="left" /> Previous
             </span>
-            <span className="detail-nav__title">
-              {pad(prev.no)} {prev.title}
-            </span>
+            <span className="display detail-nav__title">{prev.title}</span>
           </Link>
           <div className="pane glass glass--amber filler" style={grainOffset(25) as Style} aria-hidden="true" />
           <Link
@@ -136,12 +123,10 @@ export default async function WorkPage({ params }: Props) {
             className="pane glass lit link-pane pane-pad detail-nav__next"
             style={grainOffset(26) as Style}
           >
-            <span className="inline-flex items-center gap-2 text-[0.875rem] text-[var(--ink-soft)]">
+            <span className="detail-nav__dir">
               Next <Arrow dir="right" />
             </span>
-            <span className="detail-nav__title">
-              {pad(next.no)} {next.title}
-            </span>
+            <span className="display detail-nav__title">{next.title}</span>
           </Link>
         </nav>
       </main>

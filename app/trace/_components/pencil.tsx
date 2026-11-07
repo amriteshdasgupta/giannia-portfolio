@@ -61,10 +61,10 @@ export function GraphiteRule({ className = "" }: { className?: string }) {
 }
 
 /** Blue pencil leader: from the note down-left to a dot on the drawing. */
-export function LeaderLine({ className = "leader" }: { className?: string }) {
+export function LeaderLine({ className = "leader", draw = false }: { className?: string; draw?: boolean }) {
   return (
-    <svg aria-hidden className={className} viewBox="0 0 36 68" fill="none">
-      <path d="M34 2 C24 8 12 24 5 61" stroke="currentColor" strokeWidth={1.2} strokeLinecap="round" />
+    <svg aria-hidden className={`${className} ${draw ? "pencil-draw" : ""}`} viewBox="0 0 36 68" fill="none">
+      <path d="M34 2 C24 8 12 24 5 61" pathLength={1} stroke="currentColor" strokeWidth={1.2} strokeLinecap="round" />
       <circle cx={4.6} cy={63.5} r={2.4} fill="currentColor" />
     </svg>
   )

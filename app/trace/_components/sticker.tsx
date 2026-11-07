@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { motion, type Transition } from "framer-motion"
-import type { CSSProperties } from "react"
+import { useRef, useState, type CSSProperties, type SyntheticEvent } from "react"
 import { stickerOf, type Work } from "@/lib/works"
 import type { Size } from "./image-size"
 import { LeaderLine, PencilEllipse } from "./pencil"
@@ -17,18 +17,24 @@ export function Sticker({
   size,
   big = false,
   sunk = false,
-  hot = false,
-  onHot,
-  priority = false,
+  looped = false,
+  pointed = false,
+  onPoint,
+  eager = false,
 }: {
   work: Work
   size: Size
   big?: boolean
   sunk?: boolean
-  hot?: boolean
-  onHot?: (slug: string | null) => void
-  priority?: boolean
+  /** Red pencil loop around the title */
+  looped?: boolean
+  /** Pointed at: lift and draw the annotation */
+  pointed?: boolean
+  onPoint?: (slug: string | null) => void
+  eager?: boolean
 }) {
+  const [flip, setFlip] = useState(false)
+  const annot = useRef<HTMLSpanElement>(null)
   const s = scatter(w.slug)
   const aspect = size.width / size.height
   // Portrait sheets get narrower so every sticker covers roughly the same area
@@ -41,8 +47,14 @@ export function Sticker({
     "--dy": `${s.dy}px`,
   } as CSSProperties
 
-  const enter = () => onHot?.(w.slug)
-  const leave = () => onHot?.(null)
+  const enter = (e: SyntheticEvent<HTMLElement>) => {
+    // Annotate towards whichever side has room on the sheet
+    const r = e.currentTarget.getBoundingClientRect()
+    const annotWidth = annot.current?.offsetWidth ?? 0
+    setFlip(r.left + r.width * 0.42 + annotWidth > window.innerWidth - 40)
+    onPoint?.(w.slug)
+  }
+  const leave = () => onPoint?.(null)
 
   return (
     <motion.li
@@ -73,35 +85,29 @@ export function Sticker({
                   ? "(min-width: 1024px) 12vw, 30vw"
                   : "(min-width: 1024px) 18vw, (min-width: 768px) 28vw, 45vw"
             }
-            loading={priority ? "eager" : "lazy"}
+            loading={eager ? "eager" : "lazy"}
             fetchPriority={big && !sunk ? "high" : undefined}
             className="sticker-img"
             style={{ width: `${width}%` }}
             draggable={false}
           />
           <span className="sticker-label" aria-hidden>
-            <span className="relative inline-block">
+            <span className="relative">
               {w.title}
-              <PencilEllipse on={hot} big={big && !sunk} />
+              <PencilEllipse on={looped} big={big && !sunk} />
             </span>
-            <span className="sticker-label-rule" />
+            <span className="sticker-year">{w.year}</span>
+          </span>
+          <span className="sr-only">
+            , {w.context}, {w.year}
           </span>
         </Link>
-        <p className="sticker-note">
-          {sunk ? (
-            <>
-              {w.context}, {w.year}
-            </>
-          ) : (
-            <>
-              <LeaderLine />
-              <span className="note-meta">
-                {w.context}, {w.year}
-              </span>
-              <span className="note-text">{w.note}</span>
-            </>
-          )}
-        </p>
+        {sunk ? null : (
+          <span ref={annot} aria-hidden className="sticker-annot" data-on={pointed} data-flip={flip}>
+            <LeaderLine draw />
+            {w.context} · {w.year}
+          </span>
+        )}
       </div>
     </motion.li>
   )

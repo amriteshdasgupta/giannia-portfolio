@@ -8,25 +8,60 @@ type Style = React.CSSProperties
 
 export const metadata: Metadata = {
   title: "About",
-  description: `${about.name}, ${about.role.toLowerCase()}: bio, contact and CV.`,
+  description: about.bio[0],
+}
+
+const isReal = (href: string) => href !== "#"
+
+/** One label / value pair in its own pane. Links only when there is somewhere real to go. */
+function Field({
+  label,
+  value,
+  href,
+  glass,
+  index,
+  id,
+  large = false,
+}: {
+  label: string
+  value: string
+  href?: string
+  glass?: "cobalt" | "amber"
+  index: number
+  id?: string
+  large?: boolean
+}) {
+  const live = href !== undefined && isReal(href)
+  const className = `pane glass pane-pad kv-pane${glass ? ` glass--${glass}` : ""}${live ? " lit" : ""}`
+  const body = (
+    <dl className="kv">
+      <dt>{label}</dt>
+      <dd className={large ? "kv-value-lg" : undefined}>{href !== undefined && !live ? "Placeholder" : value}</dd>
+    </dl>
+  )
+  return live ? (
+    <a id={id} href={href} className={className} style={grainOffset(index) as Style}>
+      {body}
+    </a>
+  ) : (
+    <div id={id} className={className} style={grainOffset(index) as Style}>
+      {body}
+    </div>
+  )
 }
 
 export default function AboutPage() {
-  const fullName = [about.name, about.surname].filter(Boolean).join(" ")
-  const cvReady = about.cv !== "#"
-
   return (
     <div className="wall wall--inner">
       <HeaderBay />
       <main className="inner">
         <div className="bay about-top">
-          <div className="pane glass pane-pad flex flex-col justify-between gap-6" style={grainOffset(11) as Style}>
-            <h1 className="display title-xl">{fullName}</h1>
-            <p className="m-0 text-[1.0625rem]">{about.role}</p>
+          <div className="pane glass pane-pad" style={grainOffset(11) as Style}>
+            <h1 className="display title-xl relative z-[1]">About</h1>
           </div>
           <div className="pane glass pane-pad flex flex-col gap-4" style={grainOffset(12) as Style}>
             {about.bio.map((para) => (
-              <p key={para} className="prose">
+              <p key={para} className="prose relative z-[1]">
                 {para}
               </p>
             ))}
@@ -34,47 +69,38 @@ export default function AboutPage() {
         </div>
 
         <div className="bay about-mid">
-          <div className="pane glass pane-pad" style={grainOffset(13) as Style}>
-            <p className="label">School</p>
-            <p className="m-0 text-[1.0625rem]">{about.school}</p>
-            <p className="m-0 text-[1.0625rem] tabular-nums">{about.years}</p>
-          </div>
-          <a
+          <Field
             id="contact"
+            label="Email"
+            value={about.email}
             href={`mailto:${about.email}`}
-            className="pane glass glass--cobalt lit link-pane pane-pad scroll-mt-4"
-            style={grainOffset(14) as Style}
-          >
-            <span className="label">Write to me</span>
-            <span className="about-email">{about.email}</span>
-          </a>
-          <a
-            href={about.cv}
-            className="pane glass glass--amber lit link-pane pane-pad"
-            style={grainOffset(15) as Style}
-            {...(cvReady ? { download: true } : {})}
-          >
-            <span className="display text-[1.75rem]">Download CV</span>
-            <span className="text-[0.875rem]">{cvReady ? "PDF" : "Placeholder link until the file arrives"}</span>
-          </a>
+            glass="cobalt"
+            index={13}
+            large
+          />
+          <Field label="School" value={about.school} index={14} />
+          <Field label="Years" value={about.years} index={15} />
         </div>
 
-        <nav className="bay about-links" aria-label="Elsewhere">
+        <nav className="bay about-links" aria-label="CV and links">
+          <Field label="CV" value="Download" href={about.cv} glass="amber" index={16} />
           {about.links.map((l, i) => (
-            <a key={l.label} href={l.href} className="pane glass lit link-pane pane-pad min-h-[5.5rem]" style={grainOffset(16 + i) as Style}>
-              <span className="inline-flex items-center gap-2 text-[1.125rem]">
-                {l.label} <Arrow dir="right" />
-              </span>
-            </a>
+            <Field
+              key={l.label}
+              label={l.label}
+              value={l.href.replace(/^https?:\/\/(www\.)?/, "")}
+              href={l.href}
+              index={17 + i}
+            />
           ))}
-          <Link href="/glazed" className="pane glass lit link-pane back-pane pane-pad min-h-[5.5rem]" style={grainOffset(19) as Style}>
+          <Link href="/glazed" className="pane glass lit link-pane back-pane pane-pad" style={grainOffset(20) as Style}>
             <Arrow dir="left" />
             <span>All works</span>
           </Link>
-          <div className="pane glass glass--oxblood filler" style={grainOffset(20) as Style} aria-hidden="true" />
+          <div className="pane glass glass--oxblood filler" style={grainOffset(21) as Style} aria-hidden="true" />
         </nav>
       </main>
-      <FootBay>Placeholder details: bio, school, email and links stand in until Giannia sends the real ones.</FootBay>
+      <FootBay>Placeholder details — real ones coming</FootBay>
     </div>
   )
 }

@@ -72,6 +72,12 @@ def main() -> None:
         size = 1400
         img.resize((size, size), Image.LANCZOS).save(OUT / f"{slug}.jpg", quality=86, optimize=True)
 
+        # pad with white so drawings that touch the frame still get a closed outline
+        pad = img.width // 14
+        padded = Image.new("RGB", (img.width + 2 * pad, img.height + 2 * pad), "white")
+        padded.paste(img, (pad, pad))
+        img = padded
+
         mask = silhouette(img, slug in RECT).resize((size, size), Image.LANCZOS)
         mask = mask.filter(ImageFilter.GaussianBlur(1.2))
         sticker = img.resize((size, size), Image.LANCZOS).convert("RGBA")

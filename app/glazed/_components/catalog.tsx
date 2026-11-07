@@ -54,7 +54,6 @@ export function Catalog({
 }) {
   const lit = (w: Work) => filter === "all" || w.kind === filter
   const litCount = works.filter(lit).length
-  const filterLabel = filters.find((f) => f.value === filter)!.label
 
   return (
     <>
@@ -69,41 +68,40 @@ export function Catalog({
                 aria-pressed={filter === f.value}
                 onClick={() => onFilter?.(f.value)}
               >
-                <span className="relative z-[1]">{f.label}</span>
-                <span className="toggle__count relative z-[1]">{countOf(f.value)}</span>
+                <span>
+                  {f.label}
+                  <sup>{countOf(f.value)}</sup>
+                </span>
               </button>
             </li>
           ))}
         </ul>
-        <div className="side__group side__group--view">
-          <div className="view-pair" role="group" aria-label="View works as">
-            <button
-              type="button"
-              className="pane glass lit toggle toggle--view"
-              style={grainOffset(30) as Style}
-              aria-pressed={view === "wall"}
-              onClick={() => onView?.("wall")}
-            >
-              <span className="relative z-[1]">Wall</span>
-            </button>
-            <button
-              type="button"
-              className="pane glass lit toggle toggle--view"
-              style={grainOffset(31) as Style}
-              aria-pressed={view === "list"}
-              onClick={() => onView?.("list")}
-            >
-              <span className="relative z-[1]">List</span>
-            </button>
-          </div>
-          <p className="pane glass count" style={grainOffset(32) as Style} aria-live="polite">
-            {filter === "all"
-              ? `All ${works.length} works lit`
-              : `${litCount} of ${works.length} lit: ${filterLabel.toLowerCase()}`}
-          </p>
+        <div className="view-pair" role="group" aria-label="View">
+          <button
+            type="button"
+            className="pane glass lit toggle toggle--view"
+            style={grainOffset(30) as Style}
+            aria-pressed={view === "wall"}
+            onClick={() => onView?.("wall")}
+          >
+            <span>Wall</span>
+          </button>
+          <button
+            type="button"
+            className="pane glass lit toggle toggle--view"
+            style={grainOffset(31) as Style}
+            aria-pressed={view === "list"}
+            onClick={() => onView?.("list")}
+          >
+            <span>List</span>
+          </button>
         </div>
+        <p className="sr-only" aria-live="polite">
+          {litCount} of {works.length} works shown
+        </p>
         <div className="side__fill" aria-hidden="true">
           <div className="pane glass glass--oxblood" style={grainOffset(33) as Style} />
+          <div className="pane glass" style={grainOffset(36) as Style} />
           <div className="side__fill-row">
             <div className="pane glass" style={grainOffset(34) as Style} />
             <div className="pane glass glass--amber" style={grainOffset(35) as Style} />
@@ -192,11 +190,11 @@ function Schedule({ lit }: { lit: (w: Work) => boolean }) {
                   <span className="sr-only">, </span>
                   {w.year}
                 </span>
-                <span className="schedule__context schedule__muted">
+                <span className="schedule__context soft">
                   <span className="sr-only">, </span>
                   {w.context}
                 </span>
-                <span className="schedule__medium schedule__muted">
+                <span className="schedule__medium soft">
                   <span className="sr-only">, </span>
                   {w.medium}
                 </span>

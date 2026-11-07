@@ -32,12 +32,12 @@ export function FilterTabs({ value, onChange }: { value: Filter; onChange: (f: F
           >
             <span className="relative">
               {o.label}
+              <sup>
+                <span className="sr-only">, </span>
+                {countOf(o.value)}
+                <span className="sr-only"> works</span>
+              </sup>
               <PencilUnderline on={on} />
-            </span>
-            <span className="trace-tab-count">
-              <span className="sr-only">, </span>
-              {countOf(o.value)}
-              <span className="sr-only"> works</span>
             </span>
           </button>
         )
