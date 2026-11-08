@@ -4,7 +4,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { startTransition, useEffect, useState, ViewTransition, type CSSProperties } from "react"
 import { about, kinds, kindLabel, stickerOf, works, type Work } from "@/lib/works"
-import { kindVars } from "./colours"
 import { FilterTabs } from "./filter-tabs"
 import type { Size } from "./image-size"
 import { homeHref, scatter, type Filter } from "./scatter"
@@ -43,8 +42,6 @@ export function Catalogue({ initialKind, sizes }: { initialKind: Filter; sizes: 
       ]}
       side={<FilterTabs value={kind} onChange={choose} />}
       foot="Placeholder works"
-      kind={kind}
-      wash={kind === "all" ? 0 : 16}
     >
       <p className="sr-only" aria-live="polite">
         {label ? `${label}: ${shown.length} of ${works.length} works` : `All ${works.length} works`}
@@ -65,7 +62,6 @@ function Item({ work: w, size, index, big }: { work: Work; size: Size; index: nu
   // portrait sheets get narrower so every sticker covers roughly the same area
   const width = Math.round((72 + s.grow * 18) * Math.min(1, size.width / size.height) ** 0.9)
   const place = {
-    ...kindVars(w.kind),
     "--i": index,
     "--dx": `${(s.dx * 0.8).toFixed(1)}%`,
     "--dy": `${s.dy}px`,

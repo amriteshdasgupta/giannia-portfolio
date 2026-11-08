@@ -65,23 +65,17 @@ a {
 
 /* ---------- Masthead strip ---------- */
 
+/* A plain line of text across the top: no rules, just the columns */
 .strip {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-bottom: var(--rule);
+  gap: 0.25rem 0;
+  padding-block: 0.5rem;
   font-size: 0.875rem;
   line-height: 1.3;
 }
 .strip > * {
-  padding: 0.875rem 1.25rem;
-  border-right: var(--rule);
-  border-bottom: var(--rule);
-}
-.strip > *:nth-child(2n) {
-  border-right: 0;
-}
-.strip > *:nth-last-child(-n + 2) {
-  border-bottom: 0;
+  padding: 0.5rem 1.25rem;
 }
 .strip a {
   text-decoration: none;
@@ -90,19 +84,9 @@ a {
   text-decoration: underline;
 }
 
-/* The strip's rules continue the catalogue's column rules below it */
 @media (min-width: 768px) {
   .strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .strip > * {
-    border-bottom: 0;
-  }
-  .strip > *:nth-child(2n) {
-    border-right: var(--rule);
-  }
-  .strip > *:last-child {
-    border-right: 0;
   }
   /* three columns on tablets: the years give way */
   .strip > *:nth-child(3) {
@@ -112,12 +96,13 @@ a {
 @media (min-width: 1024px) {
   .strip {
     grid-template-columns: 12rem repeat(3, minmax(0, 1fr));
+    padding-block: 0.75rem;
   }
   .strip > *:nth-child(3) {
     display: block;
   }
   .strip > * {
-    padding: 1rem 1.5rem;
+    padding: 0.5rem 1.5rem;
   }
 }
 @media (min-width: 1280px) {
@@ -127,15 +112,6 @@ a {
   .strip > *:nth-child(2) {
     grid-column: span 2;
   }
-}
-
-/* ---------- Colour wash ---------- */
-
-/* choosing a kind washes the page in its colour; All leaves plain paper */
-.wash {
-  min-height: 100dvh;
-  background: color-mix(in oklab, var(--k, transparent) var(--wash, 0%), var(--color-paper));
-  transition: background-color 0.8s var(--ease-out);
 }
 
 /* ---------- Page body: tab column + main ---------- */
@@ -175,51 +151,38 @@ a {
   display: none;
 }
 
-/* Each tab is a coloured index divider: a solid swatch on its edge, a light
-   wash of its colour behind the label, the full colour when chosen */
 .tab {
-  --k: var(--color-ink);
-  --on: var(--color-paper);
-  position: relative;
   flex: none;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.875rem 1.25rem 0.875rem 1.5rem;
+  padding: 0.875rem 1.25rem;
   border-right: var(--rule);
   font-size: 0.9375rem;
   line-height: 1.2;
   text-align: left;
   text-decoration: none;
   color: var(--color-ink);
-  background: color-mix(in oklab, var(--k) 20%, var(--color-paper));
+  background: var(--color-paper);
   cursor: pointer;
   transition:
-    background-color 0.45s var(--ease-out),
-    color 0.45s var(--ease-out),
+    background-color 0.35s var(--ease-out),
+    color 0.35s var(--ease-out),
     padding 0.45s var(--ease-out);
 }
-.tab::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0.625rem;
-  background: var(--k);
-  transition: width 0.45s var(--ease-out);
-}
 .tab:hover {
-  background: color-mix(in oklab, var(--k) 34%, var(--color-paper));
+  background: var(--color-plate);
 }
 .tab[aria-pressed="true"],
 .tab[aria-current="page"] {
-  background: var(--k);
-  color: var(--on);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 .tab-count {
   font-size: 0.75rem;
   color: inherit;
-  opacity: 0.65;
+  opacity: 0.6;
 }
 
 @media (min-width: 1024px) {
@@ -234,7 +197,7 @@ a {
   }
   .tab:hover,
   .tab[aria-pressed="true"] {
-    padding-left: 2.125rem;
+    padding-left: 2rem;
   }
 }
 
@@ -340,18 +303,8 @@ a {
   text-wrap: balance;
 }
 .item-no {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4375rem;
   font-size: 0.75rem;
   color: var(--color-ink-soft);
-}
-.item-no::before {
-  content: "";
-  width: 0.6875rem;
-  height: 0.6875rem;
-  border-radius: 1px;
-  background: var(--k);
 }
 .item-title {
   font-weight: 500;
@@ -405,14 +358,14 @@ a {
   justify-content: center;
   width: 100%;
   padding: 1rem 1.25rem;
-  background: var(--k, var(--color-ink));
-  color: var(--on, var(--color-paper));
+  background: var(--color-ink);
+  color: var(--color-paper);
   font-size: 0.9375rem;
   text-decoration: none;
   transition: background-color 0.35s var(--ease-out);
 }
 .button:hover {
-  background: color-mix(in oklab, var(--k) 82%, black);
+  background: #33322f;
 }
 .button:focus-visible {
   outline-color: var(--color-ink);

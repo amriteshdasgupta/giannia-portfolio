@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { kinds, works, type Kind } from "@/lib/works"
-import { kindVars } from "./colours"
 import { homeHref, type Filter } from "./scatter"
 
 const options: { value: Filter; label: string }[] = [
@@ -21,7 +20,6 @@ export function FilterTabs({ value, onChange }: { value: Filter; onChange: (f: F
           aria-pressed={o.value === value}
           onClick={() => onChange(o.value)}
           className="tab"
-          style={kindVars(o.value)}
         >
           {o.label}
           <span className="tab-count">
@@ -45,7 +43,6 @@ export function KindLinks({ current }: { current?: Kind }) {
           href={homeHref(o.value)}
           aria-current={o.value === current ? "page" : undefined}
           className="tab"
-          style={kindVars(o.value)}
         >
           {o.label}
           <span className="tab-count">{countOf(o.value)}</span>
