@@ -56,6 +56,8 @@ export default async function ItemPage({ params }: Props) {
       ]}
       side={<KindLinks current={w.kind} />}
       foot="Placeholder work"
+      kind={w.kind}
+      wash={10}
     >
       <article className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:grid-cols-2">
         <div>
@@ -92,7 +94,7 @@ export default async function ItemPage({ params }: Props) {
         </div>
 
         <div className="min-w-0 px-5 py-8 sm:px-8 lg:sticky lg:top-0 lg:self-start lg:px-10 lg:py-10">
-          <p className="text-sm text-ink-soft">
+          <p className="item-no text-sm">
             Nº {pad(w.no)} · {kindLabel(w.kind)}
           </p>
           <h1 className="mt-3 text-[clamp(2rem,3.2vw,2.875rem)] leading-[1.05] font-medium tracking-[-0.025em] text-balance">

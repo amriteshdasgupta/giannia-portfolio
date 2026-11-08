@@ -129,6 +129,15 @@ a {
   }
 }
 
+/* ---------- Colour wash ---------- */
+
+/* choosing a kind washes the page in its colour; All leaves plain paper */
+.wash {
+  min-height: 100dvh;
+  background: color-mix(in oklab, var(--k, transparent) var(--wash, 0%), var(--color-paper));
+  transition: background-color 0.8s var(--ease-out);
+}
+
 /* ---------- Page body: tab column + main ---------- */
 
 .body {
@@ -166,38 +175,51 @@ a {
   display: none;
 }
 
+/* Each tab is a coloured index divider: a solid swatch on its edge, a light
+   wash of its colour behind the label, the full colour when chosen */
 .tab {
+  --k: var(--color-ink);
+  --on: var(--color-paper);
+  position: relative;
   flex: none;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.875rem 1.25rem;
+  padding: 0.875rem 1.25rem 0.875rem 1.5rem;
   border-right: var(--rule);
   font-size: 0.9375rem;
   line-height: 1.2;
   text-align: left;
   text-decoration: none;
   color: var(--color-ink);
-  background: var(--color-paper);
+  background: color-mix(in oklab, var(--k) 20%, var(--color-paper));
   cursor: pointer;
   transition:
-    background-color 0.35s var(--ease-out),
-    color 0.35s var(--ease-out),
+    background-color 0.45s var(--ease-out),
+    color 0.45s var(--ease-out),
     padding 0.45s var(--ease-out);
 }
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0.625rem;
+  background: var(--k);
+  transition: width 0.45s var(--ease-out);
+}
 .tab:hover {
-  background: var(--color-plate);
+  background: color-mix(in oklab, var(--k) 34%, var(--color-paper));
 }
 .tab[aria-pressed="true"],
 .tab[aria-current="page"] {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--k);
+  color: var(--on);
 }
 .tab-count {
   font-size: 0.75rem;
   color: inherit;
-  opacity: 0.6;
+  opacity: 0.65;
 }
 
 @media (min-width: 1024px) {
@@ -212,7 +234,7 @@ a {
   }
   .tab:hover,
   .tab[aria-pressed="true"] {
-    padding-left: 2rem;
+    padding-left: 2.125rem;
   }
 }
 
@@ -318,8 +340,18 @@ a {
   text-wrap: balance;
 }
 .item-no {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
   font-size: 0.75rem;
   color: var(--color-ink-soft);
+}
+.item-no::before {
+  content: "";
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-radius: 1px;
+  background: var(--k);
 }
 .item-title {
   font-weight: 500;
@@ -373,14 +405,14 @@ a {
   justify-content: center;
   width: 100%;
   padding: 1rem 1.25rem;
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--k, var(--color-ink));
+  color: var(--on, var(--color-paper));
   font-size: 0.9375rem;
   text-decoration: none;
   transition: background-color 0.35s var(--ease-out);
 }
 .button:hover {
-  background: #33322f;
+  background: color-mix(in oklab, var(--k) 82%, black);
 }
 .button:focus-visible {
   outline-color: var(--color-ink);

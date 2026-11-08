@@ -25,27 +25,45 @@ CLOSE = 31  # px at WORK size: bridges gaps so the outline reads as one shape
 BORDER = 13  # px at WORK size: width of the white kiss-cut border
 
 
-# Paper documents (essays) are cut as a clean rounded rectangle, not a silhouette
+# White paper documents (essays), scanned on grey: cut exactly along the page
+# and give it a white kiss-cut border, rather than following the text
 RECT = {"on-thresholds", "reading-section"}
 
 
-def page_rect(ink: Image.Image) -> Image.Image:
-    box = ink.getbbox() or (0, 0, WORK, WORK)
-    m = 14
-    box = (max(box[0] - m, 0), max(box[1] - m, 0), min(box[2] + m, WORK), min(box[3] + m, WORK))
-    mask = Image.new("L", (WORK, WORK), 0)
-    ImageDraw.Draw(mask).rounded_rectangle(box, radius=10, fill=255)
-    return mask
+def page_sticker(img: Image.Image) -> Image.Image:
+    rgb = img.convert("RGB")
+    r, g, b = rgb.split()
+    darkest = ImageChops.darker(ImageChops.darker(r, g), b)
+    # the grey ground is flat; anything a few levels brighter is page
+    w, h = darkest.size
+    k = max(4, w // 40)
+    ground = sorted(darkest.crop(c).resize((1, 1)).getpixel((0, 0)) for c in (
+        (0, 0, k, k), (w - k, 0, w, k), (0, h - k, k, h), (w - k, h - k, w, h)))[1]
+    cut = ground + 6
+    paper = darkest.point(lambda v: 255 if v > cut else 0).filter(ImageFilter.MedianFilter(9))
+    # keep only rows and columns that are mostly page, so a shadow or a
+    # gradient in the ground can't widen the crop
+    px = paper.load()
+    cols = [x for x in range(w) if sum(px[x, y] > 0 for y in range(0, h, 4)) > h / 4 * 0.5]
+    rows = [y for y in range(h) if sum(px[x, y] > 0 for x in range(0, w, 4)) > w / 4 * 0.5]
+    box = (cols[0], rows[0], cols[-1] + 1, rows[-1] + 1) if cols and rows else (0, 0, w, h)
+    page = rgb.crop(box)
+    border = max(page.size) // 32
+    out = Image.new("RGB", (page.width + 2 * border, page.height + 2 * border), "white")
+    out.paste(page, (border, border))
+    mask = Image.new("L", out.size, 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, out.width - 1, out.height - 1), radius=border, fill=255)
+    out = out.convert("RGBA")
+    out.putalpha(mask)
+    return out
 
 
-def silhouette(img: Image.Image, rect: bool = False) -> Image.Image:
+def silhouette(img: Image.Image) -> Image.Image:
     small = img.convert("RGB").resize((WORK, WORK), Image.LANCZOS)
     r, g, b = small.split()
     darkest = ImageChops.darker(ImageChops.darker(r, g), b)
     ink = darkest.point(lambda v: 255 if v < INK_THRESHOLD else 0)
     ink = ink.filter(ImageFilter.MedianFilter(5))  # drop paper speckle
-    if rect:
-        return page_rect(ink)
 
     # close: dilate then erode
     closed = ink.filter(ImageFilter.MaxFilter(CLOSE)).filter(ImageFilter.MinFilter(CLOSE))
@@ -72,13 +90,20 @@ def main() -> None:
         size = 1400
         img.resize((size, size), Image.LANCZOS).save(OUT / f"{slug}.jpg", quality=86, optimize=True)
 
+        if slug in RECT:
+            sticker = page_sticker(img)
+            sticker.thumbnail((900, 900), Image.LANCZOS)
+            sticker.save(STICKER / f"{slug}.webp", quality=86, method=6)
+            print(f"{slug}: page sticker {sticker.size[0]}x{sticker.size[1]}")
+            continue
+
         # pad with white so drawings that touch the frame still get a closed outline
         pad = img.width // 14
         padded = Image.new("RGB", (img.width + 2 * pad, img.height + 2 * pad), "white")
         padded.paste(img, (pad, pad))
         img = padded
 
-        mask = silhouette(img, slug in RECT).resize((size, size), Image.LANCZOS)
+        mask = silhouette(img).resize((size, size), Image.LANCZOS)
         mask = mask.filter(ImageFilter.GaussianBlur(1.2))
         sticker = img.resize((size, size), Image.LANCZOS).convert("RGBA")
         sticker.putalpha(mask)
