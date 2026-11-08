@@ -58,14 +58,18 @@ export function Catalogue({ initialKind, sizes }: { initialKind: Filter; sizes: 
 }
 
 function Item({ work: w, size, index, big }: { work: Work; size: Size; index: number; big: boolean }) {
-  const { rot } = scatter(w.slug)
+  const s = scatter(w.slug)
+  // portrait sheets get narrower so every sticker covers roughly the same area
+  const width = Math.round((72 + s.grow * 18) * Math.min(1, size.width / size.height) ** 0.9)
+  const place = {
+    "--i": index,
+    "--dx": `${(s.dx * 0.8).toFixed(1)}%`,
+    "--dy": `${s.dy}px`,
+  } as CSSProperties
+
   return (
-    <li className={`item ${big ? "is-big" : ""}`} style={{ "--i": index } as CSSProperties}>
+    <li className={`item ${big ? "is-big" : ""}`} style={place}>
       <Link href={`/trace/${w.slug}`} className="item-link">
-        <span className="item-head" aria-hidden>
-          <span>Nº {pad(w.no)}</span>
-          <span>{kindLabel(w.kind)}</span>
-        </span>
         <span className="item-plate">
           <ViewTransition name={`art-${w.slug}`} share="morph">
             <Image
@@ -77,12 +81,15 @@ function Item({ work: w, size, index, big }: { work: Work; size: Size; index: nu
               loading={index < 6 ? "eager" : "lazy"}
               fetchPriority={big ? "high" : undefined}
               className="item-art"
-              style={{ "--tilt": `${(rot * 0.6).toFixed(2)}deg` } as CSSProperties}
+              style={{ "--tilt": `${s.rot.toFixed(2)}deg`, "--w": `${width}%` } as CSSProperties}
               draggable={false}
             />
           </ViewTransition>
         </span>
         <span className="item-foot">
+          <span className="item-no">
+            Nº {pad(w.no)} · {kindLabel(w.kind)}
+          </span>
           <span className="item-title">{w.title}</span>
           <span className="item-meta">
             {w.context}, {w.year}

@@ -58,7 +58,7 @@ export default async function ItemPage({ params }: Props) {
       foot="Placeholder work"
     >
       <article className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:grid-cols-2">
-        <div className="border-b border-rule lg:border-r lg:border-b-0">
+        <div>
           <div className="grid aspect-square place-items-center p-[11%]">
             <ViewTransition name={`art-${w.slug}`} share="morph">
               <Image
@@ -69,16 +69,16 @@ export default async function ItemPage({ params }: Props) {
                 sizes="(min-width: 1024px) 45vw, 92vw"
                 loading="eager"
                 fetchPriority="high"
-                className="h-full w-full object-contain drop-shadow-[0_18px_22px_rgb(20_20_19/0.14)]"
+                className="h-full w-full -rotate-[1.5deg] object-contain drop-shadow-[0_18px_22px_rgb(20_20_19/0.14)]"
               />
             </ViewTransition>
           </div>
-          <figure className="border-t border-rule">
-            <figcaption className="flex justify-between px-4 pt-3 text-xs text-ink-soft">
+          <figure className="px-5 pb-8 sm:px-8 lg:px-10">
+            <figcaption className="flex justify-between text-xs text-ink-soft">
               <span>Drawing</span>
               <span>{w.medium}</span>
             </figcaption>
-            <div className="p-4 sm:p-6">
+            <div className="mt-3 bg-white p-3 shadow-[0_1px_2px_rgb(20_20_19/0.08),0_12px_28px_-14px_rgb(20_20_19/0.25)] sm:p-4">
               <Image
                 src={drawing}
                 alt={`${w.title}: drawing`}
