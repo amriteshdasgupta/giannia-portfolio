@@ -3,38 +3,28 @@
 import Image from "next/image"
 import Link from "next/link"
 import { motion, type Transition } from "framer-motion"
-import { useRef, useState, type CSSProperties, type SyntheticEvent } from "react"
+import type { CSSProperties } from "react"
 import { stickerOf, type Work } from "@/lib/works"
 import type { Size } from "./image-size"
-import { GraphiteRule, LeaderLine, PencilEllipse } from "./pencil"
 import { scatter } from "./scatter"
 
-/** Springy but calm: settles in about half a second. */
-export const SINK: Transition = { type: "spring", bounce: 0.14, duration: 0.55 }
+/** Settles in about half a second, no overshoot. */
+export const SETTLE: Transition = { type: "spring", bounce: 0, duration: 0.5 }
 
 export function Sticker({
   work: w,
   size,
   big = false,
-  sunk = false,
-  looped = false,
-  pointed = false,
-  onPoint,
+  setAside = false,
   eager = false,
 }: {
   work: Work
   size: Size
   big?: boolean
-  sunk?: boolean
-  /** Red pencil loop around the title */
-  looped?: boolean
-  /** Pointed at: lift and draw the context annotation */
-  pointed?: boolean
-  onPoint?: (slug: string | null) => void
+  /** Left out by the filter: not focusable, no caption year */
+  setAside?: boolean
   eager?: boolean
 }) {
-  const [flip, setFlip] = useState(false)
-  const annot = useRef<HTMLSpanElement>(null)
   const s = scatter(w.slug)
   const aspect = size.width / size.height
   // Portrait sheets get narrower so every sticker covers roughly the same area
@@ -47,69 +37,39 @@ export function Sticker({
     "--dy": `${s.dy}px`,
   } as CSSProperties
 
-  const enter = (e: SyntheticEvent<HTMLElement>) => {
-    // Annotate towards whichever side has room on the sheet
-    const r = e.currentTarget.getBoundingClientRect()
-    const annotWidth = annot.current?.offsetWidth ?? 0
-    setFlip(r.left + r.width * 0.42 + annotWidth > window.innerWidth - 40)
-    onPoint?.(w.slug)
-  }
-  const leave = () => onPoint?.(null)
-
   return (
     <motion.li
-      layoutId={`trace-${w.slug}`}
+      layoutId={`sticker-${w.slug}`}
       layout
-      transition={SINK}
-      className={`trace-cell ${big && !sunk ? "is-big" : ""}`}
+      transition={SETTLE}
+      className={`cell ${big && !setAside ? "is-big" : ""}`}
     >
-      <div className="sticker" style={style}>
-        <Link
-          href={`/trace/${w.slug}`}
-          className="sticker-link"
-          tabIndex={sunk ? -1 : undefined}
-          onPointerEnter={enter}
-          onPointerLeave={leave}
-          onFocus={enter}
-          onBlur={leave}
-        >
+      <Link href={`/trace/${w.slug}`} className="sticker" style={style} tabIndex={setAside ? -1 : undefined}>
+        <span className="sticker-art">
           <Image
             src={stickerOf(w)}
-            alt={w.title}
+            alt=""
             width={size.width}
             height={size.height}
             sizes={
               big
-                ? "(min-width: 1024px) 40vw, (min-width: 768px) 60vw, 90vw"
-                : sunk
+                ? "(min-width: 1024px) 34vw, (min-width: 560px) 60vw, 90vw"
+                : setAside
                   ? "(min-width: 1024px) 12vw, 30vw"
-                  : "(min-width: 1024px) 18vw, (min-width: 768px) 28vw, 45vw"
+                  : "(min-width: 1024px) 16vw, (min-width: 560px) 28vw, 45vw"
             }
             loading={eager ? "eager" : "lazy"}
-            fetchPriority={big && !sunk ? "high" : undefined}
+            fetchPriority={big && !setAside ? "high" : undefined}
             className="sticker-img"
             style={{ width: `${width}%` }}
             draggable={false}
           />
-          <span className="sticker-label" aria-hidden>
-            <span className="sticker-title">
-              {w.title}
-              <GraphiteRule className="sticker-rule" />
-              <PencilEllipse on={looped} big={big && !sunk} />
-            </span>
-            <span className="sticker-year">{w.year}</span>
-          </span>
-          <span className="sr-only">
-            , {w.year}, {w.context}
-          </span>
-        </Link>
-        {sunk ? null : (
-          <span ref={annot} aria-hidden className="sticker-annot" data-on={pointed} data-flip={flip}>
-            <LeaderLine draw />
-            {w.context}
-          </span>
-        )}
-      </div>
+        </span>
+        <span className="sticker-caption">
+          <span className="sticker-title">{w.title}</span>
+          <span className="sticker-year">{w.year}</span>
+        </span>
+      </Link>
     </motion.li>
   )
 }

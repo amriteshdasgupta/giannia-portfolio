@@ -1,8 +1,6 @@
 import type { Metadata } from "next"
 import { about } from "@/lib/works"
-import { Masthead } from "../_components/masthead"
-import { PencilArrow } from "../_components/pencil"
-import { LinkTab, TitleBlock, TitleStamp, TraceShell } from "../_components/shell"
+import { Facts, LinkTab, Page } from "../_components/shell"
 
 export const metadata: Metadata = {
   title: "About",
@@ -14,8 +12,16 @@ const isReal = (href: string) => href !== "#" && href !== ""
 
 export default function AboutPage() {
   const links = about.links.filter((l) => isReal(l.href))
-  const facts = [
-    { label: "School", value: about.school, wide: true },
+  const rows = [
+    {
+      label: "Email",
+      value: (
+        <a href={`mailto:${about.email}`} className="underline">
+          {about.email}
+        </a>
+      ),
+    },
+    { label: "School", value: about.school },
     ...(isReal(about.cv)
       ? [
           {
@@ -28,65 +34,33 @@ export default function AboutPage() {
           },
         ]
       : []),
-    ...(links.length
-      ? [
-          {
-            label: "Links",
-            value: (
-              <ul className="flex flex-wrap gap-x-4 gap-y-1">
-                {links.map((l) => (
-                  <li key={l.label}>
-                    <a href={l.href} className="underline" rel="me noopener" target="_blank">
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ),
-          },
-        ]
-      : []),
+    ...links.map((l) => ({
+      label: l.label,
+      value: (
+        <a href={l.href} className="underline" rel="me noopener" target="_blank">
+          {l.href.replace(/^https?:\/\//, "")}
+        </a>
+      ),
+    })),
   ]
 
   return (
-    <TraceShell
-      header={<Masthead current="about" />}
-      aside={
-        <LinkTab href="/trace">
-          <span className="inline-flex items-center gap-2">
-            <PencilArrow />
-            All works
-          </span>
-        </LinkTab>
-      }
-      footer={<TitleStamp cells={["Placeholder details"]} />}
-    >
-      <div className="grid gap-x-16 gap-y-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+    <Page aside={<LinkTab href="/trace">All works</LinkTab>} foot="Placeholder details">
+      <div className="grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <section aria-labelledby="about-title">
-          <h1 id="about-title" className="font-tech text-[clamp(2.25rem,4vw,3.25rem)] leading-none">
+          <h1 id="about-title" className="text-[clamp(2rem,3.4vw,3rem)] leading-none font-medium tracking-[-0.025em]">
             About
           </h1>
-          <div className="mt-8 max-w-[62ch] space-y-5 text-[1.1875rem] leading-[1.6] text-pretty">
+          <div className="mt-6 max-w-[60ch] space-y-5 text-[1.1875rem] leading-[1.55] text-pretty">
             {about.bio.map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
         </section>
-
-        <section aria-labelledby="contact-title" id="contact" className="lg:pt-2">
-          <h2 id="contact-title" className="caps text-[0.8125rem] text-graphite-soft">
-            Contact
-          </h2>
-          <a
-            href={`mailto:${about.email}`}
-            className="mt-2 inline-block font-tech text-[1.5rem] underline decoration-pencil-red decoration-[1.5px] hover:decoration-2 lg:text-[1.875rem]"
-          >
-            {about.email}
-          </a>
-
-          <TitleBlock className="mt-8" rows={facts} />
+        <section aria-label="Contact" id="contact" className="lg:pt-3">
+          <Facts rows={rows} />
         </section>
       </div>
-    </TraceShell>
+    </Page>
   )
 }

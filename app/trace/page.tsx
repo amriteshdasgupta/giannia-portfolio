@@ -10,8 +10,7 @@ export default async function TracePage({
 }) {
   const sp = await searchParams
   const kind: Filter = kinds.some((k) => k.value === sp.kind) ? (sp.kind as Kind) : "all"
-  const view = sp.view === "index" ? "index" : "sheet"
   const sizes = Object.fromEntries(works.map((w) => [w.slug, imageSize(stickerOf(w))]))
 
-  return <TraceHome key={`${kind}:${view}`} initialKind={kind} initialView={view} sizes={sizes} />
+  return <TraceHome key={kind} initialKind={kind} sizes={sizes} />
 }

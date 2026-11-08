@@ -1,4 +1,0 @@
-osifont (ISO 3098 technical lettering) by hikikomori82
-https://github.com/hikikomori82/osifont
-osifont.ttf = osifont-lgpl3fe.ttf: GNU LGPL v3 with font exception
-osifont-italic.ttf: GNU GPL v3 with font exception

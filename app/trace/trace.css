@@ -1,37 +1,39 @@
 @import "tailwindcss";
 
-/* The Trace Roll: canary trace sheets on a light table. Lettering in ISO
-   technical script, notes in pencil, one red pencil for whatever is current. */
+/* A plain magazine page on diary grid paper. One typeface, straight type;
+   the stickers are the only things allowed to tilt. */
 
 @theme inline {
-  --font-tech: var(--font-tech-face), "Osifont", ui-sans-serif, sans-serif;
-  --font-pen: var(--font-pen-face), cursive;
-  --font-sans: var(--font-sans-face), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-host), ui-sans-serif, system-ui, sans-serif;
 
-  --color-graphite: #34332f;
-  --color-graphite-soft: #4a4840;
-  /* Darker than true non-photo blue so it holds 4.5:1 on canary */
-  --color-pencil-blue: #2a559c;
-  --color-pencil-red: #b5321f;
-  --color-ground: #e2e8ea;
-  --color-label: #fdfdfa;
+  --color-ink: #1d1c1a;
+  --color-ink-soft: #5b5850;
+  --color-paper: #f7f6f2;
+  --color-card: #fffefb;
+  --color-rule: #d9d5cb;
 }
 
 /* ---------- Browser surfaces ---------- */
 
 html {
-  background: var(--color-ground);
+  background: var(--color-paper);
   color-scheme: light;
-  scrollbar-color: #8f8a62 var(--color-ground);
+  scrollbar-color: #bdb8ac var(--color-paper);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans);
-  color: var(--color-graphite);
-  caret-color: var(--color-pencil-red);
+  color: var(--color-ink);
+  caret-color: var(--color-ink);
   overflow-x: clip;
   font-variant-numeric: tabular-nums;
+  /* diary grid: faint 24px squares */
+  background-image:
+    linear-gradient(rgb(64 84 112 / 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(64 84 112 / 0.075) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
 }
 
 ::-webkit-scrollbar {
@@ -39,317 +41,200 @@ body {
   height: 11px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-ground);
+  background: var(--color-paper);
 }
 ::-webkit-scrollbar-thumb {
-  background: #b9b38a;
-  border: 3px solid var(--color-ground);
+  background: #cfcabe;
+  border: 3px solid var(--color-paper);
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8f8a62;
+  background: #a9a497;
 }
 
 ::selection {
-  background: rgb(42 85 156 / 0.24);
-  color: var(--color-graphite);
+  background: rgb(29 28 26 / 0.14);
+  color: var(--color-ink);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-pencil-red);
-  outline-offset: 4px;
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
   border-radius: 2px;
 }
 
 a {
-  text-underline-offset: 0.24em;
+  text-underline-offset: 0.22em;
   text-decoration-thickness: 1px;
 }
 
-/* Small lettering, as in a drawing's title block */
-.caps {
-  font-family: var(--font-tech);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
+/* ---------- Page ---------- */
 
-.tex-trace {
-  background-image: url("/trace/trace-sheet.jpg");
-  background-size: 560px 560px;
-}
-
-/* ---------- The desk: light table and its stacked trace ---------- */
-
-.trace-desk {
-  position: relative;
-  margin-inline: auto;
-  max-width: 1680px;
-  min-height: 100dvh;
-}
-
-.trace-stack {
-  position: absolute;
-  inset: 0;
-  overflow: clip;
-  pointer-events: none;
-}
-
-/* Each sheet has a white plate under it: the table's light, which blooms
-   past the paper's edges onto the darker frame around it. */
-.trace-glow {
-  position: absolute;
-  background: #fff;
-  box-shadow: 0 0 34px 12px rgb(255 255 255 / 0.95);
-}
-
-/* Trace multiplies: wherever sheets overlap the canary gets denser. Three
-   layers over the light land on #f3e7b0. */
-.trace-sheet {
-  position: absolute;
-  background-image: url("/trace/trace-sheet.jpg");
-  background-size: 560px 560px;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
-  box-shadow: inset 0 0 0 1.5px rgb(150 128 50 / 0.45);
-}
-
-/* different tile scale and offset per sheet so the fibre doesn't line up
-   and stack into streaks */
-.trace-sheet[data-layer="1"] {
-  background-size: 640px 640px;
-}
-.trace-sheet[data-layer="2"] {
-  background-size: 520px 520px;
-  background-position: 137px 211px;
-}
-.trace-sheet[data-layer="3"] {
-  background-size: 580px 580px;
-  background-position: 301px 89px;
-}
-
-.trace-stack > [data-layer="1"] {
-  inset: 1.25rem 0.5rem 1rem 0.75rem;
-  rotate: 0.5deg;
-}
-.trace-stack > [data-layer="2"] {
-  inset: 0.5rem 0.875rem 1.75rem 0.25rem;
-  rotate: -0.4deg;
-}
-.trace-stack > [data-layer="3"] {
-  inset: 0.875rem 0.5rem 0.75rem 0.5rem;
-  rotate: 0.15deg;
-}
-
-@media (min-width: 1024px) {
-  .trace-stack > [data-layer="1"] {
-    inset: 3rem 1.5rem 3rem 3.25rem;
-    rotate: 2.4deg;
-  }
-  .trace-stack > [data-layer="2"] {
-    inset: 1.5rem 3.5rem 3.5rem 5.5rem;
-    rotate: -1.7deg;
-  }
-  .trace-stack > [data-layer="3"] {
-    inset: 2rem 2.25rem 2.25rem 4.75rem;
-    rotate: 0.7deg;
-  }
-}
-
-.trace-layout {
-  position: relative;
+.page {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  padding: 1.75rem 1.25rem 2.5rem;
+  max-width: 1600px;
+  min-height: 100dvh;
+  padding: 1.5rem 1.25rem 3rem;
 }
 
-.trace-aside {
-  margin-top: 1.25rem;
+.page-head {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.page-head a {
+  text-decoration: none;
+}
+
+.page-aside {
   min-width: 0;
+  margin-top: 1.25rem;
 }
 
-.trace-main {
+.page-main {
   min-width: 0;
   margin-top: 2rem;
 }
 
 @media (min-width: 640px) {
-  .trace-layout {
+  .page {
     padding-inline: 2rem;
   }
 }
 
+/* From laptop width the tabs hang off the left edge of the screen */
 @media (min-width: 1024px) {
-  .trace-layout {
-    grid-template-columns: 9.75rem minmax(0, 1fr);
-    padding: 3.25rem 4.5rem 4.5rem 0;
+  .page {
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    column-gap: 3rem;
+    padding: 2rem 3.5rem 4rem 0;
   }
-  .trace-head {
+  .page-head {
     grid-column: 2;
   }
-  .trace-aside {
+  .page-aside {
     grid-column: 1;
     grid-row: 2;
     position: sticky;
     top: 2rem;
     align-self: start;
-    margin-top: 3rem;
+    margin-top: 2.5rem;
   }
-  .trace-main {
+  .page-main {
     grid-column: 2;
     grid-row: 2;
-    margin-top: 3rem;
+    margin-top: 2.5rem;
   }
 }
 
-/* ---------- Index tabs (filters) ---------- */
+/* ---------- Tabs (filters, and the way back from a work) ---------- */
 
-.trace-tabs {
+.tabs {
   display: flex;
   gap: 0.375rem;
   overflow-x: auto;
+  /* run the row to the screen edge on the left */
   margin-inline: -1.25rem;
-  padding: 0.375rem 1.25rem 0.625rem;
+  padding: 0.125rem 1.25rem 0.5rem 0;
   scrollbar-width: none;
 }
-.trace-tabs::-webkit-scrollbar {
+.tabs::-webkit-scrollbar {
   display: none;
 }
 @media (min-width: 640px) {
-  .trace-tabs {
+  .tabs {
     margin-inline: -2rem;
-    padding-inline: 2rem;
+    padding-right: 2rem;
   }
 }
 
-.trace-tab {
-  position: relative;
-  isolation: isolate;
+.tab {
   flex: none;
   display: flex;
-  align-items: center;
-  padding: 0.625rem 0.875rem 0.6875rem;
-  font-family: var(--font-tech);
-  font-size: 0.8125rem;
-  line-height: 1.25;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  align-items: baseline;
+  padding: 0.625rem 1rem 0.6875rem 1.25rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgb(40 36 24 / 0.06);
+  font-size: 0.9375rem;
+  line-height: 1.2;
   text-align: left;
   text-decoration: none;
-  color: var(--color-graphite);
+  color: var(--color-ink);
   cursor: pointer;
-  rotate: calc(var(--tilt) * 0.4);
+  transition:
+    translate 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
 }
-
-.trace-tab::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: url("/trace/trace-sheet.jpg");
-  background-size: 560px 560px;
-  opacity: 0.82;
-  border-radius: 2px;
-  box-shadow:
-    inset 0 0 0 1px rgb(150 132 30 / 0.32),
-    0 1px 2px rgb(80 72 20 / 0.14);
+/* only a tab that touches the screen edge loses its left side */
+.tab:first-child {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
 }
-
-.trace-tab[aria-pressed="true"]::before {
-  opacity: 1;
-  filter: brightness(0.96);
+.tab:hover {
+  border-color: #c4bfb3;
 }
-.trace-tab:hover::before {
-  opacity: 0.94;
+.tab[aria-pressed="true"] {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
 }
-
-.trace-tab sup {
-  top: -0.55em;
+.tab sup {
+  top: -0.5em;
   margin-left: 0.2em;
-  font-size: 0.7em;
-  letter-spacing: 0;
+  font-size: 0.68em;
+  color: inherit;
+  opacity: 0.7;
 }
 
 @media (min-width: 1024px) {
-  .trace-tabs {
+  .tabs {
     flex-direction: column;
     gap: 0.5rem;
     overflow: visible;
     margin: 0;
-    padding: 0 0 0 0.75rem;
+    padding: 0;
   }
-  .trace-tab {
-    width: 9rem;
-    min-height: 3.5rem;
-    padding: 0.75rem 0.75rem 0.75rem 1.125rem;
-    rotate: var(--tilt);
+  .tab {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 1.5rem;
+    border-left: 0;
+    border-radius: 0 4px 4px 0;
     translate: -0.5rem 0;
   }
-  .trace-tab[aria-pressed="true"] {
+  .tab:hover,
+  .tab[aria-pressed="true"] {
     translate: 0 0;
   }
 }
 
-/* ---------- Pencil marks ---------- */
-
-/* gap longer than the dash and offset past it, so the "off" state leaves no
-   round-cap dot behind */
-.pencil-draw path {
-  stroke-dasharray: 1 1.2;
-  stroke-dashoffset: 1.1;
-  transition: stroke-dashoffset 0.45s cubic-bezier(0.65, 0, 0.35, 1);
-}
-.pencil-draw[data-on="true"] path,
-[data-on="true"] > .pencil-draw path {
-  stroke-dashoffset: 0;
-}
-
-.pencil-ellipse {
-  position: absolute;
-  left: -0.7em;
-  top: -0.55em;
-  width: calc(100% + 1.4em);
-  height: calc(100% + 1.1em);
-  overflow: visible;
-  pointer-events: none;
-  color: var(--color-pencil-red);
-}
-
-.pencil-underline {
-  position: absolute;
-  left: -0.15em;
-  top: calc(100% + 0.1em);
-  width: calc(100% + 0.4em);
-  height: 0.5em;
-  overflow: visible;
-  pointer-events: none;
-}
-
 /* ---------- Sticker field ---------- */
 
-.trace-field {
+.field {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-flow: dense;
-  gap: 2rem 0.875rem;
+  gap: 2.25rem 1rem;
 }
 
-.trace-cell {
+.cell {
   position: relative;
   min-width: 0;
 }
-
-.trace-cell.is-big {
+.cell.is-big {
   grid-column: span 2;
 }
 
-/* From small tablets up, the featured work takes two thirds with two
-   stickers stacked beside it */
 @media (min-width: 560px) {
-  .trace-field {
+  .field {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.25rem 1.5rem;
+    gap: 2.5rem 1.5rem;
   }
-  .trace-cell.is-big {
+  .cell.is-big {
     grid-column: 1 / span 2;
     grid-row: span 2;
     align-self: center;
@@ -357,151 +242,118 @@ a {
 }
 
 @media (min-width: 1024px) {
-  .trace-field {
+  .field {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2rem 2rem;
+    gap: 2.5rem 2rem;
   }
-  .trace-field > .trace-cell.is-big {
+  .field > .cell.is-big {
     grid-column: 2 / span 2;
     grid-row: 1 / span 2;
   }
 }
 
-/* Wide sheets: six columns, the featured work a third of the field in the
-   middle, eight stickers around it above the fold */
 @media (min-width: 1280px) {
-  .trace-field {
+  .field {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1.75rem 1.75rem;
+    gap: 2.25rem 1.75rem;
   }
-  .trace-field > .trace-cell.is-big {
+  .field > .cell.is-big {
     grid-column: 3 / span 2;
   }
 }
 
-.trace-sunk {
+/* What the filter leaves out: smaller and faded, below the rest */
+.set-aside {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem 0.75rem;
+  gap: 1.5rem 1rem;
+  margin-top: 4.5rem;
+  opacity: 0.32;
+  filter: grayscale(1);
 }
 @media (min-width: 768px) {
-  .trace-sunk {
+  .set-aside {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (min-width: 1024px) {
-  .trace-sunk {
+  .set-aside {
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 2rem 1.5rem;
   }
 }
 
-.trace-sunk .sticker {
-  filter: saturate(0.3) contrast(0.85);
-}
-
-/* One more sheet of trace laid over whatever the filter leaves behind */
-.trace-overlay {
-  position: absolute;
-  inset: -1.5rem -0.5rem -1.25rem;
-  z-index: 2;
-  rotate: -1.1deg;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 0 1px rgb(150 132 30 / 0.32),
-    0 1px 2px rgb(80 72 20 / 0.1);
-}
-@media (min-width: 1024px) {
-  .trace-overlay {
-    inset: -1.75rem -1.75rem -1.5rem;
-  }
-}
-
+/* The whole sticker drifts a little off the grid; only its art tilts, so
+   the caption always reads straight and never collides with the art */
 .sticker {
-  --r: var(--rot-sm);
   --x: 0%;
-  position: relative;
+  --y: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translate(var(--x), var(--y, 0px)) rotate(var(--r));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  transform: translate(var(--x), var(--y));
 }
 @media (min-width: 1024px) {
   .sticker {
-    --r: var(--rot-lg);
     --x: var(--dx);
     --y: var(--dy);
   }
 }
 
-.sticker-link {
-  position: relative;
+.sticker-art {
+  --r: var(--rot-sm);
   display: flex;
+  justify-content: center;
   width: 100%;
-  flex-direction: column;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
-  border-radius: 6px;
+  transform: rotate(var(--r));
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@media (min-width: 1024px) {
+  .sticker-art {
+    --r: var(--rot-lg);
+  }
 }
 
 .sticker-img {
   height: auto;
   max-width: 100%;
-  filter: drop-shadow(0 1px 1px rgb(70 62 20 / 0.2)) drop-shadow(0 3px 6px rgb(70 62 20 / 0.1));
+  filter: drop-shadow(0 1px 1px rgb(40 36 24 / 0.18)) drop-shadow(0 3px 6px rgb(40 36 24 / 0.09));
   transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.trace-field .sticker:has(.sticker-link:hover, .sticker-link:focus-visible) {
-  transform: translate(var(--x), calc(var(--y, 0px) - 6px)) rotate(var(--r));
+.field .sticker:hover .sticker-art,
+.field .sticker:focus-visible .sticker-art {
+  transform: translateY(-6px) rotate(var(--r));
 }
-.trace-field .sticker-link:hover .sticker-img,
-.trace-field .sticker-link:focus-visible .sticker-img {
-  filter: drop-shadow(0 2px 2px rgb(70 62 20 / 0.16)) drop-shadow(0 16px 18px rgb(70 62 20 / 0.2));
+.field .sticker:hover .sticker-img,
+.field .sticker:focus-visible .sticker-img {
+  filter: drop-shadow(0 2px 2px rgb(40 36 24 / 0.14)) drop-shadow(0 16px 18px rgb(40 36 24 / 0.17));
 }
 
-/* One label treatment for every sticker: a white slip with the title
-   lettered on it over a graphite guide line, and the year beside it */
-.sticker-label {
-  position: relative;
-  display: inline-block;
-  margin-top: -0.5rem;
+/* Title then year, set as one line of text so a wrapped title keeps its
+   year after the last word */
+.sticker-caption {
+  display: block;
+  margin-top: 0.875rem;
   max-width: 100%;
-  padding: 0.3125rem 0.625rem 0.5rem;
-  background: var(--color-label);
-  box-shadow: 0 1px 1.5px rgb(70 62 20 / 0.2);
-  font-family: var(--font-tech);
-  font-size: 0.875rem;
-  line-height: 1.25;
+  font-size: 0.9375rem;
+  line-height: 1.3;
   text-align: center;
   text-wrap: balance;
 }
-.sticker-title {
-  position: relative;
-}
-.sticker-rule {
-  position: absolute;
-  left: -0.2em;
-  top: calc(100% + 0.05em);
-  width: calc(100% + 0.4em);
-  height: 0.35em;
-}
 .sticker-year {
-  margin-left: 0.6em;
-  font-size: 0.75em;
-  letter-spacing: 0.06em;
+  margin-left: 0.4em;
+  color: var(--color-ink-soft);
   white-space: nowrap;
-  color: var(--color-graphite-soft);
 }
-.is-big .sticker-year {
-  margin-left: 1.5em;
+.field .sticker:hover .sticker-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
 }
-@media (min-width: 1024px) {
-  .sticker-label {
-    font-size: 0.9375rem;
-  }
-}
+
 .is-big .sticker-img {
   max-width: min(100%, 30rem);
 }
@@ -510,147 +362,24 @@ a {
     max-width: 100%;
   }
 }
-.is-big .sticker-label {
+.is-big .sticker-caption {
   font-size: 1.125rem;
-  padding: 0.375rem 0.875rem 0.5625rem;
-}
-@media (min-width: 1024px) {
-  .is-big .sticker-label {
-    font-size: 1.375rem;
-    margin-top: -0.875rem;
-  }
 }
 
-/* Pencil annotation (context), drawn only while a sticker is pointed at */
-.sticker-annot {
-  display: none;
-}
-@media (min-width: 1024px) and (hover: hover) {
-  .trace-field .sticker-annot {
-    display: block;
-    position: absolute;
-    z-index: 3;
-    left: 42%;
-    bottom: calc(100% + 0.125rem);
-    font-family: var(--font-pen);
-    font-size: 1.625rem;
-    line-height: 0.95;
-    width: max-content;
-    max-width: 15rem;
-    color: var(--color-pencil-blue);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease-out;
-  }
-  .trace-field .sticker-annot[data-flip="true"] {
-    left: auto;
-    right: 42%;
-  }
-  .trace-field .sticker-annot[data-on="true"] {
-    opacity: 1;
-    transition-delay: 0.12s;
-  }
-  .sticker-annot .leader {
-    position: absolute;
-    right: calc(100% + 0.125rem);
-    top: 0.6rem;
-    width: 1.75rem;
-    height: 4.5rem;
-    overflow: visible;
-  }
-  .sticker-annot[data-flip="true"] .leader {
-    right: auto;
-    left: calc(100% + 0.125rem);
-    transform: scaleX(-1);
-  }
-}
+/* ---------- Footer ---------- */
 
-/* ---------- Title block in the sheet's corner ---------- */
-
-.trace-footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 4rem;
-}
-.trace-stamp {
-  background: var(--color-label);
-  box-shadow: 0 1px 1.5px rgb(70 62 20 / 0.2);
-}
-/* pinned to the bottom-right of the sheet while it scrolls */
-@media (min-width: 1024px) {
-  .trace-footer {
-    position: sticky;
-    bottom: 1.5rem;
-    z-index: 20;
-    margin-top: 3rem;
-    pointer-events: none;
-  }
-  .trace-stamp {
-    pointer-events: auto;
-  }
-}
-
-/* ---------- Index (schedule) view ---------- */
-
-.schedule th,
-.schedule td {
-  padding: 0.875rem 1rem 0.875rem 0;
-  border-bottom: 1px solid rgb(52 51 47 / 0.3);
-  text-align: left;
-  vertical-align: baseline;
-  font-weight: 400;
-}
-.schedule thead th {
-  border-bottom: 1.5px solid rgb(52 51 47 / 0.8);
-  padding-block: 0.5rem;
-}
-.schedule td:last-child,
-.schedule th:last-child {
-  padding-right: 0;
-}
-.schedule tbody tr {
-  position: relative;
-  transition: background-color 0.15s;
-}
-.schedule tbody tr:hover,
-.schedule tbody tr:focus-within {
-  background: rgb(52 51 47 / 0.05);
-}
-.schedule tbody tr:hover .row-title {
-  text-decoration: underline;
-  text-decoration-color: var(--color-pencil-red);
-  text-decoration-thickness: 1.5px;
-}
-/* the whole row is the link */
-.schedule .row-title::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-.schedule .row-title:focus-visible {
-  outline: none;
-}
-.schedule tbody tr:has(.row-title:focus-visible) {
-  outline: 2px solid var(--color-pencil-red);
-  outline-offset: -2px;
-}
-
-/* ---------- Detail page ---------- */
-
-.tape {
-  position: absolute;
-  width: 5.5rem;
-  height: 1.375rem;
-  background: rgb(238 230 204 / 0.82);
-  box-shadow: 0 1px 1px rgb(70 62 20 / 0.12);
+.page-foot {
+  margin-top: 5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-rule);
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sticker,
-  .sticker-img,
-  .sticker-annot,
-  .schedule tbody tr,
-  .pencil-draw path {
+  .tab,
+  .sticker-art,
+  .sticker-img {
     transition: none !important;
   }
 }

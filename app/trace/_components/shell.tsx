@@ -1,85 +1,55 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
+import { about } from "@/lib/works"
 
-const LAYERS = [1, 2, 3]
-
-/** The light table and its stack of trace; every page is drawn on the top sheet. */
-export function TraceShell({
-  header,
+/** Name at the top, tabs hanging off the left edge, the page beside them. */
+export function Page({
+  home = false,
   aside,
-  footer,
+  foot,
   children,
 }: {
-  header: ReactNode
+  /** On the home page the name is the page heading and links nowhere */
+  home?: boolean
   aside?: ReactNode
-  footer?: ReactNode
+  foot?: ReactNode
   children: ReactNode
 }) {
   return (
-    <div className="trace-desk">
-      <div aria-hidden className="trace-stack">
-        {LAYERS.map((n) => (
-          <div key={`glow-${n}`} className="trace-glow" data-layer={n} />
-        ))}
-        {LAYERS.map((n) => (
-          <div key={`sheet-${n}`} className="trace-sheet" data-layer={n} />
-        ))}
-      </div>
-      <div className="trace-layout">
-        <div className="trace-head">{header}</div>
-        {aside ? <aside className="trace-aside">{aside}</aside> : null}
-        <main className="trace-main">
-          {children}
-          {footer ? <footer className="trace-footer">{footer}</footer> : null}
-        </main>
-      </div>
+    <div className="page">
+      <header className="page-head">
+        {home ? <h1>{about.name}</h1> : <Link href="/trace">{about.name}</Link>}
+      </header>
+      {aside ? <aside className="page-aside">{aside}</aside> : null}
+      <main className="page-main">
+        {children}
+        {foot ? <footer className="page-foot">{foot}</footer> : null}
+      </main>
     </div>
   )
 }
 
-/** The drafted title block in the sheet's bottom-right corner. */
-export function TitleStamp({ cells }: { cells: string[] }) {
+/** A single tab that links somewhere, used off the home page. */
+export function LinkTab({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <p className="trace-stamp caps flex w-fit flex-wrap border-[1.5px] border-graphite text-[0.75rem] leading-none text-graphite">
-      {cells.map((c, i) => (
-        <span key={c} className={`px-3 py-2 ${i > 0 ? "border-l border-graphite/60" : ""}`}>
-          {c}
-        </span>
-      ))}
-    </p>
+    <nav aria-label="Back" className="tabs">
+      <Link href={href} className="tab">
+        {children}
+      </Link>
+    </nav>
   )
 }
 
-/** Label / value facts, ruled like a drawing's title block. */
-export function TitleBlock({
-  rows,
-  className = "",
-}: {
-  rows: { label: string; value: ReactNode; wide?: boolean }[]
-  className?: string
-}) {
+/** Label / value facts, one per ruled line. */
+export function Facts({ rows }: { rows: { label: string; value: ReactNode }[] }) {
   return (
-    <dl className={`grid grid-cols-2 overflow-hidden border-[1.5px] border-graphite ${className}`}>
+    <dl className="border-t border-rule">
       {rows.map((r) => (
-        <div
-          key={r.label}
-          className={`-mb-px -mr-px border-b border-r border-graphite/45 px-3 pt-2 pb-2.5 ${r.wide ? "col-span-2" : ""}`}
-        >
-          <dt className="caps text-[0.6875rem] text-graphite-soft">{r.label}</dt>
-          <dd className="mt-1 font-tech text-[1rem] leading-snug text-graphite">{r.value}</dd>
+        <div key={r.label} className="grid grid-cols-[8rem_minmax(0,1fr)] gap-4 border-b border-rule py-2.5">
+          <dt className="text-ink-soft">{r.label}</dt>
+          <dd>{r.value}</dd>
         </div>
       ))}
     </dl>
-  )
-}
-
-/** A single trace tab on the left edge that links somewhere (used off the home sheet). */
-export function LinkTab({ href, children }: { href: string; children: ReactNode }) {
-  return (
-    <div className="trace-tabs">
-      <Link href={href} className="trace-tab no-underline" style={{ ["--tilt" as string]: "-0.8deg" }}>
-        {children}
-      </Link>
-    </div>
   )
 }

@@ -29,12 +29,7 @@ export function scatter(slug: string) {
 }
 
 export type Filter = Kind | "all"
-export type View = "sheet" | "index"
 
-export function homeHref({ kind, view }: { kind: Filter; view: View }) {
-  const params = new URLSearchParams()
-  if (kind !== "all") params.set("kind", kind)
-  if (view === "index") params.set("view", "index")
-  const q = params.toString()
-  return q ? `/trace?${q}` : "/trace"
+export function homeHref(kind: Filter) {
+  return kind === "all" ? "/trace" : `/trace?kind=${kind}`
 }
