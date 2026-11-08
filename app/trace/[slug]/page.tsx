@@ -2,9 +2,11 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { getWork, imageOf, kindLabel, neighbours, works } from "@/lib/works"
+import { ViewTransition } from "react"
+import { about, getWork, imageOf, kindLabel, neighbours, stickerOf, works } from "@/lib/works"
+import { KindLinks } from "../_components/filter-tabs"
 import { imageSize } from "../_components/image-size"
-import { Facts, LinkTab, Page } from "../_components/shell"
+import { Page, Spec, pad } from "../_components/shell"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -20,15 +22,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: w.title, description: w.summary }
 }
 
-export default async function WorkPage({ params }: Props) {
+export default async function ItemPage({ params }: Props) {
   const w = getWork((await params).slug)
   if (!w) notFound()
 
   const { prev, next } = neighbours(w.slug)
-  const img = imageOf(w)
-  const size = imageSize(img)
+  const shot = stickerOf(w)
+  const shotSize = imageSize(shot)
+  const drawing = imageOf(w)
+  const drawingSize = imageSize(drawing)
+  const enquire = `mailto:${about.email}?subject=${encodeURIComponent(`Nº ${pad(w.no)}: ${w.title}`)}`
 
-  const facts = [
+  const spec = [
     { label: "Kind", value: kindLabel(w.kind) },
     { label: "Year", value: w.year },
     { label: "Context", value: w.context },
@@ -38,58 +43,101 @@ export default async function WorkPage({ params }: Props) {
   ]
 
   return (
-    <Page aside={<LinkTab href="/trace">All works</LinkTab>} foot="Placeholder work">
-      <article className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <figure className="lg:sticky lg:top-8 lg:self-start">
-          <div className="border border-rule bg-card p-3 sm:p-4">
-            <Image
-              src={img}
-              alt={w.title}
-              width={size.width}
-              height={size.height}
-              sizes="(min-width: 1024px) 46vw, 92vw"
-              loading="eager"
-              fetchPriority="high"
-              className="h-auto w-full"
-            />
+    <Page
+      strip={[
+        <Link key="name" href="/trace">
+          {about.name}
+        </Link>,
+        <Link key="back" href="/trace">
+          Catalogue of works
+        </Link>,
+        <span key="no">Nº {pad(w.no)}</span>,
+        <span key="kind">{kindLabel(w.kind)}</span>,
+      ]}
+      side={<KindLinks current={w.kind} />}
+      foot="Placeholder work"
+    >
+      <article className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] xl:grid-cols-2">
+        <div className="border-b border-rule lg:border-r lg:border-b-0">
+          <div className="grid aspect-square place-items-center p-[11%]">
+            <ViewTransition name={`art-${w.slug}`} share="morph">
+              <Image
+                src={shot}
+                alt={w.title}
+                width={shotSize.width}
+                height={shotSize.height}
+                sizes="(min-width: 1024px) 45vw, 92vw"
+                loading="eager"
+                fetchPriority="high"
+                className="h-full w-full object-contain drop-shadow-[0_18px_22px_rgb(20_20_19/0.14)]"
+              />
+            </ViewTransition>
           </div>
-        </figure>
+          <figure className="border-t border-rule">
+            <figcaption className="flex justify-between px-4 pt-3 text-xs text-ink-soft">
+              <span>Drawing</span>
+              <span>{w.medium}</span>
+            </figcaption>
+            <div className="p-4 sm:p-6">
+              <Image
+                src={drawing}
+                alt={`${w.title}: drawing`}
+                width={drawingSize.width}
+                height={drawingSize.height}
+                sizes="(min-width: 1024px) 45vw, 92vw"
+                className="h-auto w-full"
+              />
+            </div>
+          </figure>
+        </div>
 
-        <div className="min-w-0">
-          <h1 className="text-[clamp(2rem,3.4vw,3rem)] leading-[1.05] font-medium tracking-[-0.025em] text-balance">
+        <div className="min-w-0 px-5 py-8 sm:px-8 lg:sticky lg:top-0 lg:self-start lg:px-10 lg:py-10">
+          <p className="text-sm text-ink-soft">
+            Nº {pad(w.no)} · {kindLabel(w.kind)}
+          </p>
+          <h1 className="mt-3 text-[clamp(2rem,3.2vw,2.875rem)] leading-[1.05] font-medium tracking-[-0.025em] text-balance">
             {w.title}
           </h1>
-          <p className="mt-5 max-w-[56ch] text-[1.1875rem] leading-[1.5] text-pretty">{w.summary}</p>
+          <p className="mt-4 max-w-[52ch] text-[1.125rem] leading-[1.5] text-pretty">{w.summary}</p>
 
-          <div className="mt-8 max-w-xl">
-            <Facts rows={facts} />
-          </div>
+          <a href={enquire} className="button mt-8">
+            Enquire about this work
+          </a>
 
-          <div className="mt-12 space-y-8">
-            {w.sections.map((s) => (
-              <section key={s.heading}>
-                <h2 className="font-medium">{s.heading}</h2>
-                <p className="mt-1.5 max-w-[62ch] text-[1.0625rem] leading-[1.6] text-pretty">{s.body}</p>
-              </section>
-            ))}
-            {w.note ? (
-              <section>
-                <h2 className="font-medium">Note</h2>
-                <p className="mt-1.5 max-w-[62ch] text-[1.0625rem] leading-[1.6] italic">{w.note}</p>
-              </section>
-            ) : null}
-          </div>
+          <Spec rows={spec} className="mt-10" />
+
+          <h2 className="mt-12 text-sm text-ink-soft">Description</h2>
+          <Spec
+            className="mt-3"
+            rows={[
+              ...w.sections.map((s) => ({ label: s.heading, value: s.body })),
+              ...(w.note ? [{ label: "Note", value: <span className="italic">{w.note}</span> }] : []),
+            ]}
+          />
+
+          <h2 className="mt-12 text-sm text-ink-soft">Downloads</h2>
+          <ul className="spec mt-3">
+            <li className="!block">
+              <a href={drawing} download className="flex justify-between gap-4 underline-offset-4 hover:underline">
+                <span>Drawing</span>
+                <span className="text-ink-soft">JPG</span>
+              </a>
+            </li>
+          </ul>
         </div>
       </article>
 
-      <nav aria-label="More works" className="mt-20 grid gap-6 border-t border-rule pt-6 sm:grid-cols-2">
-        <Link href={`/trace/${prev.slug}`} className="group no-underline">
-          <span className="block text-sm text-ink-soft">Previous</span>
-          <span className="mt-1 block text-[1.25rem] font-medium group-hover:underline">{prev.title}</span>
+      <nav aria-label="More works" className="grid border-t border-rule sm:grid-cols-2">
+        <Link href={`/trace/${prev.slug}`} className="group block px-5 py-5 no-underline sm:border-r sm:border-rule lg:px-6">
+          <span className="block text-sm text-ink-soft">Previous · Nº {pad(prev.no)}</span>
+          <span className="mt-1 block text-[1.125rem] font-medium group-hover:underline">{prev.title}</span>
         </Link>
-        <Link href={`/trace/${next.slug}`} className="group no-underline sm:text-right">
-          <span className="block text-sm text-ink-soft">Next</span>
-          <span className="mt-1 block text-[1.25rem] font-medium group-hover:underline">{next.title}</span>
+        <Link
+          href={`/trace/${next.slug}`}
+          className="group block border-t border-rule px-5 py-5 no-underline sm:border-t-0 sm:text-right lg:px-6"
+        >
+          <span className="block text-sm text-ink-soft">Next · Nº {pad(next.no)}</span>
+          <span className="mt-1 block text-[1.125rem] font-medium group-hover:underline">{next.title}</span>
         </Link>
       </nav>
     </Page>

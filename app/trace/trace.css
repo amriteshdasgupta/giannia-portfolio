@@ -1,16 +1,21 @@
 @import "tailwindcss";
 
-/* A plain magazine page on diary grid paper. One typeface, straight type;
-   the stickers are the only things allowed to tilt. */
+/* A printed catalogue of works. Paper, one ink, hairline rules that section
+   the page into cells; each work is an item, its sticker the product shot. */
 
 @theme inline {
   --font-sans: var(--font-host), ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #1d1c1a;
-  --color-ink-soft: #5b5850;
-  --color-paper: #f7f6f2;
-  --color-card: #fffefb;
-  --color-rule: #d9d5cb;
+  --color-ink: #141413;
+  --color-ink-soft: #64625c;
+  --color-paper: #f3f2ee;
+  --color-plate: #e9e8e3;
+  --color-rule: #141413;
+}
+
+:root {
+  --rule: 1px solid var(--color-rule);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---------- Browser surfaces ---------- */
@@ -18,7 +23,7 @@
 html {
   background: var(--color-paper);
   color-scheme: light;
-  scrollbar-color: #bdb8ac var(--color-paper);
+  scrollbar-color: #b9b7b0 var(--color-paper);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -28,12 +33,6 @@ body {
   caret-color: var(--color-ink);
   overflow-x: clip;
   font-variant-numeric: tabular-nums;
-  /* diary grid: faint 24px squares */
-  background-image:
-    linear-gradient(rgb(64 84 112 / 0.075) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(64 84 112 / 0.075) 1px, transparent 1px);
-  background-size: 24px 24px;
-  background-position: -1px -1px;
 }
 
 ::-webkit-scrollbar {
@@ -44,23 +43,19 @@ body {
   background: var(--color-paper);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cfcabe;
+  background: #cbc9c2;
   border: 3px solid var(--color-paper);
   border-radius: 6px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a9a497;
-}
 
 ::selection {
-  background: rgb(29 28 26 / 0.14);
-  color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 
 :focus-visible {
   outline: 2px solid var(--color-ink);
-  outline-offset: 3px;
-  border-radius: 2px;
+  outline-offset: -4px;
 }
 
 a {
@@ -68,318 +63,341 @@ a {
   text-decoration-thickness: 1px;
 }
 
-/* ---------- Page ---------- */
+/* ---------- Masthead strip ---------- */
 
-.page {
+.strip {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 1600px;
-  min-height: 100dvh;
-  padding: 1.5rem 1.25rem 3rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: var(--rule);
+  font-size: 0.875rem;
+  line-height: 1.3;
 }
-
-.page-head {
-  font-size: 1.0625rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+.strip > * {
+  padding: 0.875rem 1.25rem;
+  border-right: var(--rule);
+  border-bottom: var(--rule);
 }
-.page-head a {
+.strip > *:nth-child(2n) {
+  border-right: 0;
+}
+.strip > *:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.strip a {
   text-decoration: none;
 }
-
-.page-aside {
-  min-width: 0;
-  margin-top: 1.25rem;
+.strip a:hover {
+  text-decoration: underline;
 }
 
-.page-main {
-  min-width: 0;
-  margin-top: 2rem;
-}
-
-@media (min-width: 640px) {
-  .page {
-    padding-inline: 2rem;
+/* The strip's rules continue the catalogue's column rules below it */
+@media (min-width: 768px) {
+  .strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .strip > * {
+    border-bottom: 0;
+  }
+  .strip > *:nth-child(2n) {
+    border-right: var(--rule);
+  }
+  .strip > *:last-child {
+    border-right: 0;
+  }
+  /* three columns on tablets: the years give way */
+  .strip > *:nth-child(3) {
+    display: none;
   }
 }
-
-/* From laptop width the tabs hang off the left edge of the screen */
 @media (min-width: 1024px) {
-  .page {
-    grid-template-columns: 10.5rem minmax(0, 1fr);
-    column-gap: 3rem;
-    padding: 2rem 3.5rem 4rem 0;
+  .strip {
+    grid-template-columns: 12rem repeat(3, minmax(0, 1fr));
   }
-  .page-head {
-    grid-column: 2;
+  .strip > *:nth-child(3) {
+    display: block;
   }
-  .page-aside {
-    grid-column: 1;
-    grid-row: 2;
-    position: sticky;
-    top: 2rem;
-    align-self: start;
-    margin-top: 2.5rem;
+  .strip > * {
+    padding: 1rem 1.5rem;
   }
-  .page-main {
-    grid-column: 2;
-    grid-row: 2;
-    margin-top: 2.5rem;
+}
+@media (min-width: 1280px) {
+  .strip {
+    grid-template-columns: 12rem repeat(4, minmax(0, 1fr));
+  }
+  .strip > *:nth-child(2) {
+    grid-column: span 2;
   }
 }
 
-/* ---------- Tabs (filters, and the way back from a work) ---------- */
+/* ---------- Page body: tab column + main ---------- */
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.side {
+  min-width: 0;
+  border-bottom: var(--rule);
+}
+
+@media (min-width: 1024px) {
+  .body {
+    grid-template-columns: 12rem minmax(0, 1fr);
+  }
+  .side {
+    border-bottom: 0;
+    border-right: var(--rule);
+  }
+  .side-inner {
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* ---------- Tabs: cards hanging off the left edge ---------- */
 
 .tabs {
   display: flex;
-  gap: 0.375rem;
   overflow-x: auto;
-  /* run the row to the screen edge on the left */
-  margin-inline: -1.25rem;
-  padding: 0.125rem 1.25rem 0.5rem 0;
   scrollbar-width: none;
 }
 .tabs::-webkit-scrollbar {
   display: none;
-}
-@media (min-width: 640px) {
-  .tabs {
-    margin-inline: -2rem;
-    padding-right: 2rem;
-  }
 }
 
 .tab {
   flex: none;
   display: flex;
   align-items: baseline;
-  padding: 0.625rem 1rem 0.6875rem 1.25rem;
-  background: var(--color-card);
-  border: 1px solid var(--color-rule);
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgb(40 36 24 / 0.06);
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-right: var(--rule);
   font-size: 0.9375rem;
   line-height: 1.2;
   text-align: left;
   text-decoration: none;
   color: var(--color-ink);
+  background: var(--color-paper);
   cursor: pointer;
   transition:
-    translate 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.2s,
-    color 0.2s,
-    border-color 0.2s;
-}
-/* only a tab that touches the screen edge loses its left side */
-.tab:first-child {
-  border-left: 0;
-  border-radius: 0 4px 4px 0;
+    background-color 0.35s var(--ease-out),
+    color 0.35s var(--ease-out),
+    padding 0.45s var(--ease-out);
 }
 .tab:hover {
-  border-color: #c4bfb3;
+  background: var(--color-plate);
 }
-.tab[aria-pressed="true"] {
+.tab[aria-pressed="true"],
+.tab[aria-current="page"] {
   background: var(--color-ink);
-  border-color: var(--color-ink);
   color: var(--color-paper);
 }
-.tab sup {
-  top: -0.5em;
-  margin-left: 0.2em;
-  font-size: 0.68em;
+.tab-count {
+  font-size: 0.75rem;
   color: inherit;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 @media (min-width: 1024px) {
   .tabs {
     flex-direction: column;
-    gap: 0.5rem;
     overflow: visible;
-    margin: 0;
-    padding: 0;
   }
   .tab {
-    width: 100%;
-    padding: 0.875rem 1rem 0.875rem 1.5rem;
-    border-left: 0;
-    border-radius: 0 4px 4px 0;
-    translate: -0.5rem 0;
+    border-right: 0;
+    border-bottom: var(--rule);
+    padding: 1.125rem 1.5rem;
   }
   .tab:hover,
   .tab[aria-pressed="true"] {
-    translate: 0 0;
+    padding-left: 2rem;
   }
 }
 
-/* ---------- Sticker field ---------- */
+/* ---------- Catalogue grid ---------- */
 
-.field {
+.grid-cat {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-auto-flow: dense;
-  gap: 2.25rem 1rem;
-}
-
-.cell {
-  position: relative;
-  min-width: 0;
-}
-.cell.is-big {
-  grid-column: span 2;
-}
-
-@media (min-width: 560px) {
-  .field {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.5rem 1.5rem;
-  }
-  .cell.is-big {
-    grid-column: 1 / span 2;
-    grid-row: span 2;
-    align-self: center;
-  }
-}
-
-@media (min-width: 1024px) {
-  .field {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 2.5rem 2rem;
-  }
-  .field > .cell.is-big {
-    grid-column: 2 / span 2;
-    grid-row: 1 / span 2;
-  }
-}
-
-@media (min-width: 1280px) {
-  .field {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 2.25rem 1.75rem;
-  }
-  .field > .cell.is-big {
-    grid-column: 3 / span 2;
-  }
-}
-
-/* What the filter leaves out: smaller and faded, below the rest */
-.set-aside {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem 1rem;
-  margin-top: 4.5rem;
-  opacity: 0.32;
-  filter: grayscale(1);
 }
 @media (min-width: 768px) {
-  .set-aside {
+  .grid-cat {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .grid-cat {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-@media (min-width: 1024px) {
-  .set-aside {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 2rem 1.5rem;
-  }
+
+.item {
+  min-width: 0;
+  border-right: var(--rule);
+  border-bottom: var(--rule);
+}
+.item.is-big {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
-/* The whole sticker drifts a little off the grid; only its art tilts, so
-   the caption always reads straight and never collides with the art */
-.sticker {
-  --x: 0%;
-  --y: 0px;
+.item-link {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  height: 100%;
   text-decoration: none;
   color: inherit;
-  border-radius: 4px;
-  transform: translate(var(--x), var(--y));
-}
-@media (min-width: 1024px) {
-  .sticker {
-    --x: var(--dx);
-    --y: var(--dy);
-  }
 }
 
-.sticker-art {
-  --r: var(--rot-sm);
+.item-head {
   display: flex;
-  justify-content: center;
-  width: 100%;
-  transform: rotate(var(--r));
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-@media (min-width: 1024px) {
-  .sticker-art {
-    --r: var(--rot-lg);
-  }
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
 }
 
-.sticker-img {
-  height: auto;
-  max-width: 100%;
-  filter: drop-shadow(0 1px 1px rgb(40 36 24 / 0.18)) drop-shadow(0 3px 6px rgb(40 36 24 / 0.09));
-  transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.item-plate {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1;
+  padding: 12% 14%;
+  transition: background-color 0.5s var(--ease-out);
+}
+.is-big .item-plate {
+  aspect-ratio: auto;
+  padding: 9% 12%;
+}
+.item-link:hover .item-plate,
+.item-link:focus-visible .item-plate {
+  background: var(--color-plate);
 }
 
-.field .sticker:hover .sticker-art,
-.field .sticker:focus-visible .sticker-art {
-  transform: translateY(-6px) rotate(var(--r));
-}
-.field .sticker:hover .sticker-img,
-.field .sticker:focus-visible .sticker-img {
-  filter: drop-shadow(0 2px 2px rgb(40 36 24 / 0.14)) drop-shadow(0 16px 18px rgb(40 36 24 / 0.17));
-}
-
-/* Title then year, set as one line of text so a wrapped title keeps its
-   year after the last word */
-.sticker-caption {
+/* the sticker: lies a little crooked, straightens and lifts when picked up */
+.item-art {
   display: block;
-  margin-top: 0.875rem;
-  max-width: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  rotate: var(--tilt);
+  filter: drop-shadow(0 1px 1px rgb(20 20 19 / 0.16)) drop-shadow(0 4px 8px rgb(20 20 19 / 0.08));
+  transition:
+    rotate 0.7s var(--ease-out),
+    translate 0.7s var(--ease-out),
+    scale 0.7s var(--ease-out),
+    filter 0.7s var(--ease-out);
+}
+.item-link:hover .item-art,
+.item-link:focus-visible .item-art {
+  rotate: 0deg;
+  translate: 0 -4%;
+  scale: 1.04;
+  filter: drop-shadow(0 2px 2px rgb(20 20 19 / 0.12)) drop-shadow(0 18px 22px rgb(20 20 19 / 0.16));
+}
+
+/* one height for every caption strip, so the rules line up across a row */
+.item-foot {
+  display: grid;
+  align-content: start;
+  min-height: 4.625rem;
+  gap: 0.125rem;
+  padding: 0.75rem 1rem 0.875rem;
+  border-top: var(--rule);
   font-size: 0.9375rem;
   line-height: 1.3;
-  text-align: center;
-  text-wrap: balance;
 }
-.sticker-year {
-  margin-left: 0.4em;
+.item-title {
+  font-weight: 500;
+}
+.item-meta {
+  font-size: 0.8125rem;
   color: var(--color-ink-soft);
-  white-space: nowrap;
 }
-.field .sticker:hover .sticker-title {
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
+.is-big .item-title {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
 }
 
-.is-big .sticker-img {
-  max-width: min(100%, 30rem);
+/* first load: items rise into their cells one after another */
+.intro .item {
+  animation: rise 0.9s var(--ease-out) both;
+  animation-delay: calc(var(--i) * 55ms + 80ms);
 }
-@media (min-width: 1024px) {
-  .is-big .sticker-img {
-    max-width: 100%;
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+    filter: blur(4px);
   }
 }
-.is-big .sticker-caption {
-  font-size: 1.125rem;
+
+/* ---------- Detail + about pages ---------- */
+
+.spec {
+  border-top: var(--rule);
+}
+.spec > div {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgb(20 20 19 / 0.22);
+  font-size: 0.9375rem;
+}
+.spec dt {
+  color: var(--color-ink-soft);
 }
 
-/* ---------- Footer ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.9375rem;
+  text-decoration: none;
+  transition: background-color 0.35s var(--ease-out);
+}
+.button:hover {
+  background: #33322f;
+}
+.button:focus-visible {
+  outline-color: var(--color-ink);
+  outline-offset: 3px;
+}
 
-.page-foot {
-  margin-top: 5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-rule);
-  font-size: 0.875rem;
-  color: var(--color-ink-soft);
+/* ---------- View transitions ---------- */
+
+::view-transition-group(*) {
+  animation-duration: 0.55s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-group(.morph) {
+  animation-duration: 0.7s;
+}
+::view-transition-image-pair(.morph) {
+  animation-name: via-blur;
+}
+@keyframes via-blur {
+  35% {
+    filter: blur(2px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tab,
-  .sticker-art,
-  .sticker-img {
+  *,
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
     transition: none !important;
   }
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { about } from "@/lib/works"
-import { Facts, LinkTab, Page } from "../_components/shell"
+import { KindLinks } from "../_components/filter-tabs"
+import { Page, Spec } from "../_components/shell"
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,7 +13,6 @@ export const metadata: Metadata = {
 const isReal = (href: string) => href !== "#" && href !== ""
 
 export default function AboutPage() {
-  const links = about.links.filter((l) => isReal(l.href))
   const rows = [
     {
       label: "Email",
@@ -22,6 +23,7 @@ export default function AboutPage() {
       ),
     },
     { label: "School", value: about.school },
+    { label: "Years", value: about.years },
     ...(isReal(about.cv)
       ? [
           {
@@ -34,31 +36,46 @@ export default function AboutPage() {
           },
         ]
       : []),
-    ...links.map((l) => ({
-      label: l.label,
-      value: (
-        <a href={l.href} className="underline" rel="me noopener" target="_blank">
-          {l.href.replace(/^https?:\/\//, "")}
-        </a>
-      ),
-    })),
+    ...about.links
+      .filter((l) => isReal(l.href))
+      .map((l) => ({
+        label: l.label,
+        value: (
+          <a href={l.href} className="underline" rel="me noopener" target="_blank">
+            {l.href.replace(/^https?:\/\//, "")}
+          </a>
+        ),
+      })),
   ]
 
   return (
-    <Page aside={<LinkTab href="/trace">All works</LinkTab>} foot="Placeholder details">
-      <div className="grid gap-x-14 gap-y-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+    <Page
+      strip={[
+        <Link key="name" href="/trace">
+          {about.name}
+        </Link>,
+        <Link key="back" href="/trace">
+          Catalogue of works
+        </Link>,
+        <span key="role">{about.role}</span>,
+        <span key="a">About</span>,
+      ]}
+      side={<KindLinks />}
+      foot="Placeholder details"
+    >
+      <div className="grid gap-10 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 lg:px-10 lg:py-10">
         <section aria-labelledby="about-title">
-          <h1 id="about-title" className="text-[clamp(2rem,3.4vw,3rem)] leading-none font-medium tracking-[-0.025em]">
+          <h1 id="about-title" className="text-[clamp(2rem,3.2vw,2.875rem)] leading-none font-medium tracking-[-0.025em]">
             About
           </h1>
-          <div className="mt-6 max-w-[60ch] space-y-5 text-[1.1875rem] leading-[1.55] text-pretty">
+          <div className="mt-6 max-w-[58ch] space-y-5 text-[1.125rem] leading-[1.55] text-pretty">
             {about.bio.map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
         </section>
-        <section aria-label="Contact" id="contact" className="lg:pt-3">
-          <Facts rows={rows} />
+        <section aria-label="Contact" id="contact" className="lg:pt-2">
+          <Spec rows={rows} />
         </section>
       </div>
     </Page>

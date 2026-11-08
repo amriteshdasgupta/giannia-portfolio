@@ -1,55 +1,49 @@
-import Link from "next/link"
 import type { ReactNode } from "react"
-import { about } from "@/lib/works"
 
-/** Name at the top, tabs hanging off the left edge, the page beside them. */
+/** A catalogue page: ruled strip on top, tab column hanging off the left edge, the page beside it. */
 export function Page({
-  home = false,
-  aside,
+  strip,
+  side,
   foot,
   children,
 }: {
-  /** On the home page the name is the page heading and links nowhere */
-  home?: boolean
-  aside?: ReactNode
+  strip: ReactNode[]
+  side?: ReactNode
   foot?: ReactNode
   children: ReactNode
 }) {
   return (
-    <div className="page">
-      <header className="page-head">
-        {home ? <h1>{about.name}</h1> : <Link href="/trace">{about.name}</Link>}
+    <>
+      <header className="strip">
+        {strip.map((cell, i) => (
+          <div key={i}>{cell}</div>
+        ))}
       </header>
-      {aside ? <aside className="page-aside">{aside}</aside> : null}
-      <main className="page-main">
-        {children}
-        {foot ? <footer className="page-foot">{foot}</footer> : null}
-      </main>
-    </div>
+      <div className="body">
+        <aside className="side">
+          <div className="side-inner">{side}</div>
+        </aside>
+        <main className="min-w-0">
+          {children}
+          {foot ? <footer className="px-5 py-4 text-sm text-ink-soft lg:px-6">{foot}</footer> : null}
+        </main>
+      </div>
+    </>
   )
 }
 
-/** A single tab that links somewhere, used off the home page. */
-export function LinkTab({ href, children }: { href: string; children: ReactNode }) {
+/** Label / value lines, ruled like a spec sheet. */
+export function Spec({ rows, className = "" }: { rows: { label: string; value: ReactNode }[]; className?: string }) {
   return (
-    <nav aria-label="Back" className="tabs">
-      <Link href={href} className="tab">
-        {children}
-      </Link>
-    </nav>
-  )
-}
-
-/** Label / value facts, one per ruled line. */
-export function Facts({ rows }: { rows: { label: string; value: ReactNode }[] }) {
-  return (
-    <dl className="border-t border-rule">
+    <dl className={`spec ${className}`}>
       {rows.map((r) => (
-        <div key={r.label} className="grid grid-cols-[8rem_minmax(0,1fr)] gap-4 border-b border-rule py-2.5">
-          <dt className="text-ink-soft">{r.label}</dt>
+        <div key={r.label}>
+          <dt>{r.label}</dt>
           <dd>{r.value}</dd>
         </div>
       ))}
     </dl>
   )
 }
+
+export const pad = (n: number) => String(n).padStart(2, "0")

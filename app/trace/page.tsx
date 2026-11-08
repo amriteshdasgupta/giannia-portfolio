@@ -1,7 +1,7 @@
 import { kinds, stickerOf, works, type Kind } from "@/lib/works"
+import { Catalogue } from "./_components/catalogue"
 import { imageSize } from "./_components/image-size"
 import type { Filter } from "./_components/scatter"
-import { TraceHome } from "./_components/trace-home"
 
 export default async function TracePage({
   searchParams,
@@ -12,5 +12,5 @@ export default async function TracePage({
   const kind: Filter = kinds.some((k) => k.value === sp.kind) ? (sp.kind as Kind) : "all"
   const sizes = Object.fromEntries(works.map((w) => [w.slug, imageSize(stickerOf(w))]))
 
-  return <TraceHome key={kind} initialKind={kind} sizes={sizes} />
+  return <Catalogue key={kind} initialKind={kind} sizes={sizes} />
 }
