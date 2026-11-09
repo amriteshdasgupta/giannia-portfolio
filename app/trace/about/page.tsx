@@ -65,7 +65,7 @@ export default function AboutPage() {
     >
       <div className="grid gap-10 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16 lg:px-10 lg:py-10">
         <section aria-labelledby="about-title">
-          <h1 id="about-title" className="text-[clamp(2rem,3.2vw,2.875rem)] leading-none font-medium tracking-[-0.025em]">
+          <h1 id="about-title" className="text-[clamp(2rem,3.2vw,2.875rem)] leading-none font-bold">
             About
           </h1>
           <div className="mt-6 max-w-[58ch] space-y-5 text-[1.125rem] leading-[1.55] text-pretty">
